@@ -1,0 +1,113 @@
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_CalcularComCob`(tnValor Int)
+BEGIN
+
+  /*Declarando Variables*/
+  Declare ldFechaIniAct,ldFechaFinAct,ldFechaIniAnt,ldFechaFinAnt Date;
+  Declare lnVentasAct,lnVentasAnt,lnPromedio,lnMontoBono Double (15,2);
+  Declare lnId,lnComisionista Int(5);
+  Declare lcSucursal Varchar(2);
+  Declare nError Integer;
+
+  /*Asigno los valores iniciales*/
+  Set ldFechaIniAct = (Select dFecha_Desde From tConfig_Calculos Where nId_ConfigCal=tnValor);
+  Set ldFechaFinAct = (Select dFecha_Hasta From tConfig_Calculos Where nId_ConfigCal=tnValor);
+  Set lcSucursal    = (Select cId_Sucursal From tConfig_Calculos Where nId_ConfigCal=tnValor);
+  Set ldFechaIniAnt = DATE_SUB(ldFechaIniAct, INTERVAL 1 MONTH);
+  Set ldFechaFinAnt = DATE_SUB(ldFechaFinAct, INTERVAL 1 MONTH);
+  Set lnPromedio    = 0;
+  Set lnId          = 0;
+  Set lnVentasAct   = 0;
+  Set lnVentasAnt   = 0;
+  Set lnMontoBono   = 0;
+
+  Start  Transaction;
+  /*Creo una tabla tremporal para guardar los comisionistas que dependen de otros comisionistas*/
+  Create Temporary Table ttComiDep (nId_Comisionista Int(5));
+
+  /*Creo una tabla temporal con los vendedores involucrados en el periodo para luego buscar las ventas*/
+  Create Temporary Table ttComi (/*nId Int(5) UNSIGNED NOT NULL Primary Key DEFAULT NULL AUTO_INCREMENT ,*/nId_Comisionista Int(5),nVentasAct Double(15,2),nVentasAnt Double(15,2));
+
+  /*Calculo las ventas totales del mes actual y del mes anterior*/
+  Insert Into ttComi (nId_Comisionista,nVentasAct,nVentasAnt)
+  Select tDocumentos.nId_Comisionista,Sum(if(nTipo In (10,11,12,13) and (dFecha Between ldFechaIniAct and ldFechaFinAct),nMonto_Tot,0)) /*Sumo todas las ventas*/ - Sum(if(nTipo In (14,15,16,17) And (dFecha Between ldFechaIniAct and ldFechaFinAct),nMonto_Tot,0))/*Sumo todas las Notas de Credito*/ As nVentasAct,
+         Sum(if(nTipo In (10,11,12,13) and (dFecha Between ldFechaIniAnt and ldFechaFinAnt),nMonto_Tot,0)) /*Sumo todas las ventas*/ - Sum(if(nTipo In (14,15,16,17) And (dFecha Between ldFechaIniAnt and ldFechaFinAnt),nMonto_Tot,0))/*Sumo todas las Notas de Credito*/ As nVentasAnt
+  From tDocumentos
+  Where nId_Comisionista In (Select Distinct tDetalle_ConfigCalculos.nId_Comisionista From tDetalle_ConfigCalculos Where nId_ConfigCal=tnValor)
+  Group By tDocumentos.nId_Comisionista;
+
+  Set lnVentasAct=(Select Sum(nVentasAct) From ttComi);
+  Set lnVentasAnt=(Select Sum(nVentasAnt) From ttComi);
+  Set lnPromedio =(lnVentasAct+lnVentasAnt)/2;
+  /*Eliminando los calculos anteriores*/
+  Delete From tComisionesCob Where nId_ConfigCal = tnValor;
+
+  /*Calculando las comisiones por Cobros a facturas*/
+  Insert Into tComisionesCob(nId_ConfigCal,nTipo,nDocOri,nId_Cliente,nId_Numero,dFechaEmision,dFechaVenc,dFechaCanc,nAntiguedad,nPorcBono,nFactor,nComisionable,nMonto_Doc,nComision,nVentasAnt,nVentasAct,nPromedio,nId_Comisionista)
+  Select tnValor,1,0,TD.nId_Cliente,TD.nId_Numero,TD.dFecha As dEmision,TD.dFechaVenc,Max(TM.dFecha) As dCancelacion,DatedIff(Max(TM.dFecha),TD.dFecha) As Antiguedad,If(IsNull(TPCC.nPorcComision)=1,0,TPCC.nPorcComision),Sum(If(TTM.nComisiona=1,TM.nMonto,0))/((ttComi.nVentasAnt + ttComi.nVentasAct)/2) AS nFactor,Sum(If(TTM.nComisiona=1,TM.nMonto,0)) As nComisionables,TD.nMonto_Tot,((Select Sum(nMontoBono) From tDetalle_Comi_Bono Where tDetalle_Comi_Bono.cId_TipoC=TCO.cId_TipoC) * (If(IsNull(TPCC.nPorcComision)=1,0,TPCC.nPorcComision)/100))*(Sum(If(TTM.nComisiona=1,TM.nMonto,0))/((ttComi.nVentasAnt + ttComi.nVentasAct)/2)) As nComision,ttComi.nVentasAnt,nVentasAct,((ttComi.nVentasAnt + ttComi.nVentasAct)/2),TD.nId_Comisionista
+  From tDocumentos TD Inner Join tMovimientos TM On TD.nId_Numero=TM.nId_Numero And TD.nId_Comisionista = TM.nId_Comisionista Left Join tTipo_Movimientos TTM On TM.nId_Tipo=TTM.nId_Tipo Left Join tClientes TC On TD.nId_Cliente = TC.nId_Cliente Left Join tComisionistas TCO On TCO.nId_Comisionista=TD.nId_Comisionista
+  Left Join tDetalle_Par_Cob TDPC On TDPC.nId_TipoCli = TC.nId_TipoCli Left Join tParametros_Com_cobranzas TPCC On TPCC.nId_Parametro = TDPC.nId_Parametro Inner Join ttComi On ttComi.nId_Comisionista=TCO.nId_Comisionista
+  Where TM.nId_Tipo<>6
+  Group By TD.nId_Numero,TD.dFecha,TD.nId_Cliente,TD.nId_Comisionista,TPCC.nPorcComision,TPCC.nDiasVencDesde,TPCC.nDiasVencHasta
+  Having Sum(TM.nMonto)>=TD.nMonto_Tot And (Max(TM.dFecha) Between ldFechaIniAct And ldFechaFinAct) And (DatedIff(Max(TM.dFecha),TD.dFecha) Between TPCC.nDiasVencDesde And  TPCC.nDiasVencHasta)
+  Order By TD.nId_Comisionista,TD.nId_Cliente,TD.nId_Numero;
+
+  /*Calculando comisiones por cobros a notas de debito*/
+  Insert Into tComisionesCob(nId_ConfigCal,nTipo,nDocOri,nId_Cliente,nId_Numero,dFechaEmision,dFechaVenc,dFechaCanc,nAntiguedad,nPorcBono,nFactor,nComisionable,nMonto_Doc,nComision,nVentasAnt,nVentasAct,nPromedio,nId_Comisionista)
+  Select tnValor,2,TND.nId_Numero,TND.nId_Cliente,TND.nId_ND,TND.dFecha As dEmision,TND.dFechaVenc,Max(TM.dFecha) As dCancelacion,DatedIff(Max(TM.dFecha),TND.dFecha) As Antiguedad,If(IsNull(TPCC.nPorcComision)=1,0,TPCC.nPorcComision),Sum(If(TTM.nComisiona=1,TM.nMonto,0))/((ttComi.nVentasAnt + ttComi.nVentasAct)/2) AS nFactor,TND.nMonto_Tot As nComisionables,TND.nMonto_Tot,((Select Sum(nMontoBono) From tDetalle_Comi_Bono Where tDetalle_Comi_Bono.cId_TipoC=TCO.cId_TipoC) * (If(IsNull(TPCC.nPorcComision)=1,0,TPCC.nPorcComision)/100))*(Sum(If(TTM.nComisiona=1,TM.nMonto,0))/((ttComi.nVentasAnt + ttComi.nVentasAct)/2)) As nComision,ttComi.nVentasAnt,nVentasAct,((ttComi.nVentasAnt + ttComi.nVentasAct)/2),TND.nId_Comisionista
+  From tNotasDebito TND Inner Join tMovimientos TM On TND.nId_ND=TM.nId_Numero And TND.nId_Comisionista = TM.nId_Comisionista Left Join tTipo_Movimientos TTM On TM.nId_Tipo=TTM.nId_Tipo Left Join tClientes TC On TND.nId_Cliente = TC.nId_Cliente Left Join tComisionistas TCO On TCO.nId_Comisionista=TND.nId_Comisionista
+  Left Join tDetalle_Par_Cob TDPC On TDPC.nId_TipoCli = TC.nId_TipoCli Left Join tParametros_Com_cobranzas TPCC On TPCC.nId_Parametro = TDPC.nId_Parametro Inner Join ttComi On ttComi.nId_Comisionista=TCO.nId_Comisionista
+  Where TM.nId_Tipo<>6
+  Group By TND.nId_ND,TND.dFecha,TND.nMonto_Tot,TND.nId_Cliente,TND.nId_Comisionista,TPCC.nPorcComision,TPCC.nDiasVencDesde,TPCC.nDiasVencHasta
+  Having Sum(TM.nMonto)>=TND.nMonto_Tot And (Max(TM.dFecha) Between ldFechaIniAct And ldFechaFinAct) And (DatedIff(Max(TM.dFecha),TND.dFecha) Between TPCC.nDiasVencDesde And  TPCC.nDiasVencHasta)
+  Order By TND.nId_Comisionista,TND.nId_Cliente,TND.nId_ND;
+
+  /*Calculando comisiones por notas de debito por cheques devueltos*/
+  Insert Into tComisionesCob(nId_ConfigCal,nTipo,nDocOri,nId_Cliente,nId_Numero,dFechaEmision,dFechaVenc,dFechaCanc,nAntiguedad,nPorcBono,nFactor,nComisionable,nMonto_Doc,nComision,nVentasAnt,nVentasAct,nPromedio,nId_Comisionista,dFechaE_ND,dFechaV_ND)
+  Select tnValor,3,TND.nId_Numero,TND.nId_Cliente,TND.nId_ND,TD.dFecha,TD.dFechaVenc,Max(TM.dFecha) As dCancelacion,DatedIff(Max(TM.dFecha),TD.dFecha) As Antiguedad,If(IsNull(TPCC.nPorcComision)=1,0,TPCC.nPorcComision),TND.nMonto_Tot/((ttComi.nVentasAnt + ttComi.nVentasAct)/2) AS nFactor,TND.nMonto_Tot As nComisionables,TND.nMonto_Tot,(((Select Sum(nMontoBono) From tDetalle_Comi_Bono Where tDetalle_Comi_Bono.cId_TipoC=TCO.cId_TipoC) * (If(IsNull(TPCC.nPorcComision)=1,0,TPCC.nPorcComision)/100))*(TND.nMonto_Tot/((ttComi.nVentasAnt + ttComi.nVentasAct)/2)))*-1 As nComision,ttComi.nVentasAnt,nVentasAct,((ttComi.nVentasAnt + ttComi.nVentasAct)/2),TND.nId_Comisionista,TND.dFecha,TND.dFechaVenc
+  From tNotasDebito TND Inner Join tDocumentos TD On TND.nId_Numero=TD.nId_Numero And TND.nId_Comisionista=TD.nId_Comisionista Inner Join tMovimientos TM On TM.nId_Numero=TD.nId_Numero And TM.nId_Comisionista=TD.nId_Comisionista Left Join tTipo_Movimientos TTM On TM.nId_Tipo=TTM.nId_Tipo Left Join tClientes TC On TND.nId_Cliente = TC.nId_Cliente Left Join tComisionistas TCO On TCO.nId_Comisionista=TND.nId_Comisionista
+  Left Join tDetalle_Par_Cob TDPC On TDPC.nId_TipoCli = TC.nId_TipoCli Left Join tParametros_Com_cobranzas TPCC On TPCC.nId_Parametro = TDPC.nId_Parametro Inner Join ttComi On ttComi.nId_Comisionista=TCO.nId_Comisionista
+  Where TND.nTipo = 2
+  Group By TND.nId_ND,TND.dFecha,TND.nMonto_Tot,TND.nId_Cliente,TND.nId_Comisionista,TPCC.nPorcComision,TPCC.nDiasVencDesde,TPCC.nDiasVencHasta,TD.dFecha,TD.dFechaVenc
+  Having (Max(TM.dFecha) Between ldFechaIniAct And ldFechaFinAct) And (DatedIff(Max(TM.dFecha),TD.dFecha) Between TPCC.nDiasVencDesde And  TPCC.nDiasVencHasta)
+  Order By TND.nId_Comisionista,TND.nId_Cliente,TND.nId_ND;
+
+  /*Calculando comisiones por cobros a notas de debito por cheques devueltos*/
+  Insert Into tComisionesCob(nId_ConfigCal,nTipo,nDocOri,nId_Cliente,nId_Numero,dFechaEmision,dFechaVenc,dFechaCanc,nAntiguedad,nPorcBono,nFactor,nComisionable,nMonto_Doc,nComision,nVentasAnt,nVentasAct,nPromedio,nId_Comisionista,dFechaE_ND,dFechaV_ND)
+  Select tnValor,4,TND.nId_Numero,TND.nId_Cliente,TND.nId_ND,TD.dFecha,TD.dFechaVenc,Max(TM.dFecha) As dCancelacion,DatedIff(Max(TM.dFecha),TD.dFecha) As Antiguedad,If(IsNull(TPCC.nPorcComision)=1,0,TPCC.nPorcComision),Sum(If(TTM.nComisiona=1,TM.nMonto,0))/((ttComi.nVentasAnt + ttComi.nVentasAct)/2) AS nFactor,Sum(If(TTM.nComisiona=1,TM.nMonto,0)) As nComisionables,TND.nMonto_Tot,((Select Sum(nMontoBono) From tDetalle_Comi_Bono Where tDetalle_Comi_Bono.cId_TipoC=TCO.cId_TipoC) * (If(IsNull(TPCC.nPorcComision)=1,0,TPCC.nPorcComision)/100))*(Sum(If(TTM.nComisiona=1,TM.nMonto,0))/((ttComi.nVentasAnt + ttComi.nVentasAct)/2)) As nComision,ttComi.nVentasAnt,nVentasAct,((ttComi.nVentasAnt + ttComi.nVentasAct)/2),TND.nId_Comisionista,TND.dFecha,TND.dFechaVenc
+  From tNotasDebito TND Inner Join tMovimientos TM On TND.nId_ND=TM.nId_Numero And TND.nId_Comisionista = TM.nId_Comisionista Left Join tDocumentos TD On TD.nId_Numero=TND.nId_Numero And TD.nId_Comisionista = TND.nId_Comisionista Left Join tTipo_Movimientos TTM On TM.nId_Tipo=TTM.nId_Tipo Left Join tClientes TC On TND.nId_Cliente = TC.nId_Cliente Left Join tComisionistas TCO On TCO.nId_Comisionista=TND.nId_Comisionista
+  Left Join tDetalle_Par_Cob TDPC On TDPC.nId_TipoCli = TC.nId_TipoCli Left Join tParametros_Com_cobranzas TPCC On TPCC.nId_Parametro = TDPC.nId_Parametro Inner Join ttComi On ttComi.nId_Comisionista=TCO.nId_Comisionista
+  Where TND.nTipo = 2
+  Group By TND.nId_ND,TND.dFecha,TND.nMonto_Tot,TND.nId_Cliente,TND.nId_Comisionista,TPCC.nPorcComision,TPCC.nDiasVencDesde,TPCC.nDiasVencHasta,TD.dFecha,TD.dFechaVenc
+  Having Sum(TM.nMonto)>=TND.nMonto_Tot And (Max(TM.dFecha) Between ldFechaIniAct And ldFechaFinAct) And (DatedIff(Max(TM.dFecha),TD.dFecha) Between TPCC.nDiasVencDesde And  TPCC.nDiasVencHasta)
+  Order By TND.nId_Comisionista,TND.nId_Cliente,TND.nId_ND;
+
+  Insert Into ttComiDep (nId_Comisionista) Select Distinct TDCCO.nId_Comisionista From tconfig_Calculos TCC Inner Join tDetalle_configCalculos TDCC On TCC.nId_ConfigCal = TDCC.nId_configCal Inner Join tDetalle_Config_Comi TDCCO On TDCC.nId_Comisionista = TDCCO.nId_Comisionista Where TCC.nId_ConfigCal=tnValor;
+
+  While Exists(Select * From ttComiDep) Do
+    Set lnComisionista = (Select nId_Comisionista From ttComiDep Order By 1 Limit 1);
+    Set lnMontoBono    = (Select if(isNull(Sum(nMontoBono))=1,0,Sum(nMontoBono)) From tComisionistas TCO Left Join tDetalle_Comi_Bono TDCB On TCO.cId_TipoC=TDCB.cId_TipoC Where  TCO.nId_comisionista = lnComisionista);
+    /*Calculando comisiones por cobros a notas de debito por cheques devueltos*/
+/*    Insert Into tComisionesCob(nId_ConfigCal,nTipo,nComisionable,nMonto_Doc,nComision,nVentasAnt,nVentasAct,nPromedio,nId_Comisionista)
+    Select tnValor,nTipo,Sum(nComisionable),Sum(nMonto_Doc),Sum((lnMontoBono*(nPorcBono/100))*(nComisionable/lnPromedio)),lnVentasAnt,lnVentasAct,lnPromedio,lnComisionista
+    From tComisionesCob
+    Where nId_Comisionista In(Select Distinct TDCCO.nId_Comi From tconfig_Calculos TCC Inner Join tDetalle_configCalculos TDCC On TCC.nId_ConfigCal = TDCC.nId_configCal Inner Join tDetalle_Config_Comi TDCCO On TDCC.nId_Comisionista = TDCCO.nId_Comisionista Where TCC.dFecha_Desde = ldFechaIniAct And dFecha_Hasta = ldFechaFinAct And TDCCO.nId_Comisionista = lnComisionista) And
+          nId_ConfigCal In(Select Distinct TCC.nId_ConfigCal From tconfig_Calculos TCC Inner Join tDetalle_configCalculos TDCC On TCC.nId_ConfigCal = TDCC.nId_configCal Inner Join tDetalle_Config_Comi TDCCO On TDCC.nId_Comisionista = TDCCO.nId_Comisionista Where TCC.dFecha_Desde = ldFechaIniAct And dFecha_Hasta = ldFechaFinAct And TDCCO.nId_Comisionista = lnComisionista)
+    Group By 1,2;*/
+    Insert Into tComisionesCob(nId_ConfigCal,nTipo,nComisionable,nMonto_Doc,nComision,nVentasAnt,nVentasAct,nPromedio,nId_Comisionista,nDocOri,nId_Cliente,nId_Numero,dFechaEmision,dFechaVenc,dFechaCanc,nAntiguedad,nPorcBono,nFactor,dFechaE_ND,dFechaV_ND)
+    Select tnValor,nTipo,nComisionable,nMonto_Doc,If(nTipo=3,(lnMontoBono*(nPorcBono/100))*(nComisionable/lnPromedio)*-1,(lnMontoBono*(nPorcBono/100))*(nComisionable/lnPromedio)),lnVentasAnt,lnVentasAct,lnPromedio,lnComisionista,nDocOri,nId_Cliente,nId_Numero,dFechaEmision,dFechaVenc,dFechaCanc,nAntiguedad,nPorcBono,(nComisionable/lnPromedio),dFechaE_ND,dFechaV_ND
+    From tComisionesCob
+    Where nId_Comisionista In(Select Distinct TDCCO.nId_Comi From tconfig_Calculos TCC Inner Join tDetalle_configCalculos TDCC On TCC.nId_ConfigCal = TDCC.nId_configCal Inner Join tDetalle_Config_Comi TDCCO On TDCC.nId_Comisionista = TDCCO.nId_Comisionista Where TCC.dFecha_Desde = ldFechaIniAct And dFecha_Hasta = ldFechaFinAct And TDCCO.nId_Comisionista = lnComisionista) And
+          nId_ConfigCal In(Select Distinct TCC.nId_ConfigCal From tconfig_Calculos TCC Inner Join tDetalle_configCalculos TDCC On TCC.nId_ConfigCal = TDCC.nId_configCal Inner Join tDetalle_Config_Comi TDCCO On TDCC.nId_Comisionista = TDCCO.nId_Comisionista Where TCC.dFecha_Desde = ldFechaIniAct And dFecha_Hasta = ldFechaFinAct And TDCCO.nId_Comisionista = lnComisionista);
+
+    Delete From ttComiDep Where nId_Comisionista = lnComisionista;
+  End While;
+
+  /*Si Ocurre un error en la transaccion se deshacen los cambios, sino se guardan*/
+  Set nError =(Select @Error);
+  If(nError>0) Then
+    RollBack;
+  Else
+    Commit;
+  End If;
+  Select 1;
+END

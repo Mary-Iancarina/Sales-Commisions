@@ -1,0 +1,15 @@
+CREATE DEFINER="root"@"localhost" PROCEDURE "SP_AgregarConfiguracion"()
+BEGIN
+   Declare nNumero,nError int;
+   Set nNumero =(Select nImportacion From tConfig);
+   Start Transaction;
+   Update tConfig Set nImportacion = nNumero + 1;
+   Insert Into tconfig_importacion(nId_Importacion) Values(nNumero);
+   Set nError =(Select @Error);
+   if(nError>0) then
+        ROLLBACK;
+   else
+        COMMIT;
+   end if;
+   Select nNumero;
+END

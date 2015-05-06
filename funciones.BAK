@@ -1,0 +1,16 @@
+FUNCTION CrearConexion(tcRutaData)
+LOCAL lnConex
+	lnConex=SQLSTRINGCONNECT("DRIVER={MySQL ODBC 3.51 Driver}; SERVER=192.168.1.159; DATABASE=Comisiones;UID=iancarina; PWD=426227462")
+	IF lnConex < 0 
+		MESSAGEBOX("No se pudo establecer la conexión con el servidor de datos",0+16,"Error")
+	ENDIF 
+	RETURN lnConex	
+ENDFUNC 
+
+FUNCTION Desconectar(tnConexion)
+	LOCAL lnConex
+	lnConex=SQLDISCONNECT(tnConexion)
+	IF lnConex <> 1
+		MESSAGEBOX("No se pudo desconectar",0+48,"Atención")
+	ENDIF 
+ENDFUNC

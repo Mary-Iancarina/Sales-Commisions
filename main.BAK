@@ -1,0 +1,49 @@
+&&Configuracion del Programa
+PUBLIC Fun,pcSucursal,pcServidor,pcData,pcUsuario,pcContrasena
+LOCAL lcArchivo,lnCon,lnSize
+SET DATE BRITISH 
+SET CENTURY ON 
+SET EXCLUSIVE OFF 
+SET PROCEDURE TO \Progs\Funciones.prg
+_Screen.WindowState = 2
+&&Validando Servidor
+lcTexto = ""
+IF FILE("Config.txt") 
+		lcArchivo="Config.txt"
+		lnCon=FOPEN(lcArchivo,12)
+		lnSize =  FSEEK(lnCon, 0, 2)
+		IF lnSize <=0 
+			FCLOSE(lnCon)
+			DELETE FILE "Config.txt"
+		ELSE 
+			= FSEEK(lnCon, 0, 0)
+			lcTexto=FREAD(lnCon,lnSize)
+			FCLOSE(lnCon)
+		ENDIF 
+		pcRuta = DesEncriptar(lcTexto)
+ELSE 
+	lcTexto = GETDIR("","Sistema de Cuotas","Elija un directorio de datos")
+	IF !EMPTY(lcTexto) &&AND file(lcTexto+"Cuotas.dbf")
+		lcTexto = Encriptar(lcTexto)
+		lcArchivo="Config.txt"
+		lnCon=FCREATE(lcArchivo)
+		FOPEN(lcArchivo,12)
+		FWRITE(lnCon,lctexto)
+		FCLOSE(lnCon)
+		pcRuta = DesEncriptar(lcTexto)
+	ELSE 
+		QUIT 
+	ENDIF 
+ENDIF 
+
+_Screen.Caption ="Sistema de Comisiones"
+lnConexion=crearconexion()
+IF lnConexion> 0 THEN 
+	SQLEXEC(lnConexion,"Select * From tSucursales")
+	BROWSE
+	
+ENDIF 
+quit
+*!*	DO Menu.mpr
+*!*	ON SHUTDOWN Salir()
+READ EVENTS

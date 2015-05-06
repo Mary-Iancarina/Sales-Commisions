@@ -1,0 +1,95 @@
+DROP TABLE IF EXISTS `bdcomisiones`.`tclientes`;
+CREATE TABLE  `bdcomisiones`.`tclientes` (
+  `nId_Cliente` int(10) NOT NULL default '0',
+  `cDescripcion` varchar(60) default '',
+  `cId_Usuario` varchar(20) default '',
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  primary key (`nId_Cliente`))
+CREATE INDEX nId_Cliente ON tclientes(nId_Cliente);
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tcomisionistas`;
+CREATE TABLE  `bdcomisiones`.`tcomisionistas` (
+  `nId_Comisionista` int(10)  NOT NULL default '0',
+  `cNombre` varchar(60) default '',
+  `cId_Sucursal` varchar(2) default '',
+  `cId_Usuario` varchar(20) default '',
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `cId_TipoC` varchar(20) default '',
+  PRIMARY KEY  (`nId_Comisionista`)
+)
+CREATE INDEX nId_Comisionista ON tcomisionistas(nId_Comisionista);
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tdetalles_grupos_prod`;
+CREATE TABLE  `bdcomisiones`.`tdetalles_grupos_prod` (
+  `cId_Producto` varchar(22) NOT NULL,
+  `cId_Grupo` varchar(2) NOT NULL default ''
+)
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tgrupos_productos`;
+CREATE TABLE  `bdcomisiones`.`tgrupos_productos` (
+  `cId_Grupo` varchar(2) NOT NULL default '',
+  `cDescripcion` varchar(60) default '',
+  PRIMARY KEY  (`cId_Grupo`)
+)
+
+CREATE INDEX cId_Grupo ON tgrupos_productos(cId_Grupo);
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tproductos`;
+CREATE TABLE  `bdcomisiones`.`tproductos` (
+  `cId_Producto` varchar(22) NOT NULL default '',
+  `cDescripcion` varchar(60) default '',
+  `cFactor` varchar(2) default '',
+  `nValor` decimal(10,2) default '0.00',
+  `cId_Usuario` varchar(20) default '',
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`cId_Producto`)
+);
+CREATE INDEX cId_Producto ON tproductos(cId_Producto);
+
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tsucursales`;
+CREATE TABLE  `bdcomisiones`.`tsucursales` (
+  `cId_Sucursal` varchar(2) NOT NULL,
+  `cDescripcion` varchar(60) default '',
+  `cId_Usuario` varchar(20) default '',
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`cId_Sucursal`),
+  KEY `cId_Sucursal` (`cId_Sucursal`)
+)
+
+DROP TABLE IF EXISTS `bdcomisiones`.`ttipo_comisionistas`;
+CREATE TABLE  `bdcomisiones`.`ttipo_comisionistas` (
+  `cId_TipoC` varchar(2) NOT NULL,
+  `cDescripcion` varchar(60) default '',
+  `cId_Usuario` varchar(20) default '',
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`cId_TipoC`)
+)
+
+CREATE INDEX cId_TipoC ON ttipo_comisionistas(cId_TipoC);
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tusuarios`;
+CREATE TABLE  `bdcomisiones`.`tusuarios` (
+  `cId_Login` varchar(20) NOT NULL,
+  `cPassword` varchar(20) NOT NULL,
+  `cDescripcion` varchar(60) default '',
+  `nSucursales` int(11) default '0',
+  `cSucursales` varchar(100) default '',
+  `nComisionistas` int(11) default '0',
+  `nCalculos` int(11) default '0',
+  `nReportes` int(11) default '0',
+  `nUsuarios` int(11) default '0',
+  `nConfig_Importacion` int(11) default '0',
+  `nImportacion` int(11) default '0',
+  `nParametros_com` int(11) default '0',
+  `nProductos` int(11) default '0',
+  `nGruposProd` int(11) default '0',
+  `nClientes` int(11) default '0',
+  `nRespaldar` int(11) default '0',
+  `nRestaurar` int(11) default '0',
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `cId_Usuario` varchar(20) NOT NULL default '',
+  `nTipo_Comi` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`cId_Login`),
+  KEY `cId_Login` (`cId_Login`)
+)

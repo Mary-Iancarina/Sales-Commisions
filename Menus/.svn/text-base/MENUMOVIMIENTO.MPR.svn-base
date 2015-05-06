@@ -1,0 +1,441 @@
+*       *********************************************************
+*       *                                                         
+*       * 05/13/13         MENUMOVIMIENTO.MPR           16:20:24  
+*       *                                                         
+*       *********************************************************
+*       *                                                         
+*       * Carlos Parada                                           
+*       *                                                         
+*       * Copyright (C) 2013 Iancarina                            
+*       * Parque Industrial los Llanos KM185 Via Guanar           
+*       * Araure, Portu  3303                                        
+*       * Venezuela                                         
+*       *                                                         
+*       * Descripción:                                            
+*       * Este programa se generó automáticamente por GENMENU.    
+*       *                                                         
+*       *********************************************************
+
+
+*       *********************************************************
+*       *                                                         
+*       *                    Definición de menú                   
+*       *                                                         
+*       *********************************************************
+*
+
+SET SYSMENU TO
+SET SYSMENU AUTOMATIC
+
+DEFINE PAD _3s80z0tb6 OF _MSYSMENU PROMPT "\<Archivo" COLOR SCHEME 3 ;
+	KEY ALT+A, ""
+DEFINE PAD _3s80z0tb7 OF _MSYSMENU PROMPT "\<Movimientos" COLOR SCHEME 3 ;
+	KEY ALT+M, ""
+DEFINE PAD _3s80z0tb8 OF _MSYSMENU PROMPT "\<Reportes" COLOR SCHEME 3 ;
+	KEY F8, "F8" ;
+	SKIP FOR 1=1
+DEFINE PAD _3s80z0tb9 OF _MSYSMENU PROMPT "Ma\<ntenimiento" COLOR SCHEME 3 ;
+	KEY ALT+N, ""
+DEFINE PAD _3s80z0tba OF _MSYSMENU PROMPT "\<Exploración" COLOR SCHEME 3 ;
+	KEY ALT+E, "" ;
+	SKIP FOR _screen.formCount <1
+ON PAD _3s80z0tb6 OF _MSYSMENU ACTIVATE POPUP archivo
+ON PAD _3s80z0tb7 OF _MSYSMENU ACTIVATE POPUP movimiento
+ON PAD _3s80z0tb9 OF _MSYSMENU ACTIVATE POPUP mantenimie
+ON PAD _3s80z0tba OF _MSYSMENU ACTIVATE POPUP exploració
+
+DEFINE POPUP archivo MARGIN RELATIVE SHADOW COLOR SCHEME 4
+DEFINE BAR 1 OF archivo PROMPT "S\<ucursales" ;
+	SKIP FOR wExist("frmSucursales") or !(plSucursales)
+DEFINE BAR 2 OF archivo PROMPT "\<Comisionistas" ;
+	KEY F2, "F2" ;
+	SKIP FOR wExist("frmComisionistas") or !(plComisionistas)
+DEFINE BAR 3 OF archivo PROMPT "\<Tipos de Comisionistas" ;
+	SKIP FOR wExist("frmtipo_comisionistas") or !(plTipoComisionistas)
+DEFINE BAR 4 OF archivo PROMPT "\<Bonos" ;
+	SKIP FOR wExist("frmBonos") or !(plBonos)
+DEFINE BAR 5 OF archivo PROMPT "P\<roductos" ;
+	KEY F3, "F3" ;
+	SKIP FOR wExist("frmProductos") or !(plProductos)
+DEFINE BAR 6 OF archivo PROMPT "\<Grupos de Productos" ;
+	KEY F4, "F4" ;
+	SKIP FOR wExist("frmgruposproductos") or !(plGrupos_prod)
+DEFINE BAR 7 OF archivo PROMPT "T\<ipos de Cliente" ;
+	SKIP FOR wExist("frmtipo_clientes") or !(plTiposCliente)
+DEFINE BAR 8 OF archivo PROMPT "\<Clientes" ;
+	KEY F5, "F5" ;
+	SKIP FOR wExist("frmclientes") or !(plClientes)
+DEFINE BAR 9 OF archivo PROMPT "Tip\<os de Movimientos" ;
+	SKIP FOR wExist("frmtipo_movimientos") or !(plTipoMov)
+DEFINE BAR 10 OF archivo PROMPT "Tipo\<s de Documentos" ;
+	SKIP FOR wExist("frmtiposdoc") or !(plTiposDoc)
+DEFINE BAR 11 OF archivo PROMPT "\<Datos Empleados" ;
+	SKIP FOR wExist("frmDatosEmpleados") or !(plDatosEmp)
+DEFINE BAR 12 OF archivo PROMPT "\-"
+DEFINE BAR 13 OF archivo PROMPT "C\<errar Session" ;
+	SKIP FOR 1=1
+DEFINE BAR 14 OF archivo PROMPT "\<Salir" ;
+	KEY ALT+F4, "ALT+F4" ;
+	SKIP FOR 1=1
+ON SELECTION BAR 1 OF archivo do form frmSucursales.scx
+ON SELECTION BAR 2 OF archivo do form frmComisionistas.scx
+ON SELECTION BAR 3 OF archivo do form frmtipo_comisionistas.scx
+ON SELECTION BAR 4 OF archivo do form frmBonos.scx
+ON SELECTION BAR 5 OF archivo do form frmProductos.scx
+ON SELECTION BAR 6 OF archivo do form frmgruposproductos.scx
+ON SELECTION BAR 7 OF archivo do form frmtipo_clientes.scx
+ON SELECTION BAR 8 OF archivo do form frmclientes.scx
+ON SELECTION BAR 9 OF archivo do form frmtipo_movimientos.scx
+ON SELECTION BAR 10 OF archivo do form frmtiposdoc.scx
+ON SELECTION BAR 11 OF archivo do form frmdatosempleados.scx
+ON SELECTION BAR 13 OF archivo ;
+	DO _3s80z0tbb ;
+	IN LOCFILE("\COMISIONESVEND\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
+ON SELECTION BAR 14 OF archivo quit
+
+DEFINE POPUP movimiento MARGIN RELATIVE SHADOW COLOR SCHEME 4
+DEFINE BAR 1 OF movimiento PROMPT "\<Bonos / Cuotas" ;
+	KEY F6, "F6" ;
+	SKIP FOR wExist("frmconfig_calculos") or !(plSucursales)
+DEFINE BAR 2 OF movimiento PROMPT "\<Suplencias" ;
+	SKIP FOR wExist("frmSuplencias") or !(plSuplencias)
+DEFINE BAR 3 OF movimiento PROMPT "\<Calculos" ;
+	KEY F7, "F7" ;
+	SKIP FOR 1=1
+DEFINE BAR 4 OF movimiento PROMPT "\<Importación" ;
+	SKIP FOR 1=1
+ON SELECTION BAR 1 OF movimiento do form frmconfig_calculos.scx
+ON SELECTION BAR 2 OF movimiento do form frmSuplencias.scx
+
+DEFINE POPUP mantenimie MARGIN RELATIVE SHADOW COLOR SCHEME 4
+DEFINE BAR 1 OF mantenimie PROMPT "\<Usuarios" ;
+	SKIP FOR !(plUsuarios) or Wexist("frmUsuarios")
+DEFINE BAR 2 OF mantenimie PROMPT "\<Configuración de sistema" ;
+	SKIP FOR !(plConfigSistema) or Wexist("frmConfigSistema")
+DEFINE BAR 3 OF mantenimie PROMPT "C\<onfiguración de Importación" ;
+	SKIP FOR !(plConfig_Import) or Wexist("frmconfig_importacion")
+ON SELECTION BAR 1 OF mantenimie do form frmusuarios.scx
+ON SELECTION BAR 2 OF mantenimie do form frmConfigSistema.scx
+ON SELECTION BAR 3 OF mantenimie do form frmconfig_importacion.scx
+
+DEFINE POPUP exploració MARGIN RELATIVE SHADOW COLOR SCHEME 4
+DEFINE BAR 1 OF exploració PROMPT "\<Primero" ;
+	KEY CTRL+P, "CTRL+P" ;
+	SKIP FOR _Screen.ActiveForm.Operacion<>0 or _Screen.ActiveForm.FormUnregistro=.T.
+DEFINE BAR 2 OF exploració PROMPT "\<Anterior" ;
+	KEY CTRL+A, "CTRL+A" ;
+	SKIP FOR _Screen.ActiveForm.Operacion<>0 or _Screen.ActiveForm.FormUnregistro=.T.
+DEFINE BAR 3 OF exploració PROMPT "\<Siguiente" ;
+	KEY CTRL+S, "CTRL+S" ;
+	SKIP FOR _Screen.ActiveForm.Operacion<>0 or _Screen.ActiveForm.FormUnregistro=.T.
+DEFINE BAR 4 OF exploració PROMPT "\<Ultimo" ;
+	KEY CTRL+U, "CTRL+U" ;
+	SKIP FOR _Screen.ActiveForm.Operacion<>0 or _Screen.ActiveForm.FormUnregistro=.T.
+DEFINE BAR 5 OF exploració PROMPT "\<Nuevo" ;
+	KEY CTRL+N, "CTRL+N" ;
+	SKIP FOR _Screen.ActiveForm.Operacion<>0 or _Screen.ActiveForm.FormUnregistro=.T.
+DEFINE BAR 6 OF exploració PROMPT "\<Modificar" ;
+	KEY CTRL+M, "CTRL+M" ;
+	SKIP FOR _Screen.ActiveForm.Operacion<>0
+DEFINE BAR 7 OF exploració PROMPT "\<Eliminar" ;
+	KEY CTRL+DEL, "CTRL+DEL" ;
+	SKIP FOR _Screen.ActiveForm.Operacion<>0 or _Screen.ActiveForm.FormUnregistro=.T.
+DEFINE BAR 8 OF exploració PROMPT "\<Guardar" ;
+	KEY CTRL+G, "CTRL+G" ;
+	SKIP FOR _Screen.ActiveForm.Operacion=0
+DEFINE BAR 9 OF exploració PROMPT "\<Cancelar" ;
+	KEY CTRL+Z, "CTRL+Z" ;
+	SKIP FOR _Screen.ActiveForm.Operacion=0
+DEFINE BAR 10 OF exploració PROMPT "\<Buscar" ;
+	KEY CTRL+B, "CTRL+B" ;
+	SKIP FOR _Screen.ActiveForm.Operacion<>0 or _Screen.ActiveForm.FormUnregistro=.T.
+DEFINE BAR 11 OF exploració PROMPT "\<Imprimir" ;
+	KEY CTRL+I, "CTRL+I" ;
+	SKIP FOR _Screen.ActiveForm.Operacion<>0 or _Screen.ActiveForm.FormUnregistro=.T.
+DEFINE BAR 12 OF exploració PROMPT "Ce\<rrar" ;
+	KEY CTRL+F4, "CTRL+F4" ;
+	SKIP FOR _Screen.ActiveForm.Operacion<>0
+ON SELECTION BAR 1 OF exploració ;
+	DO _3s80z0tbc ;
+	IN LOCFILE("\COMISIONESVEND\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
+ON SELECTION BAR 2 OF exploració ;
+	DO _3s80z0tbd ;
+	IN LOCFILE("\COMISIONESVEND\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
+ON SELECTION BAR 3 OF exploració ;
+	DO _3s80z0tbe ;
+	IN LOCFILE("\COMISIONESVEND\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
+ON SELECTION BAR 4 OF exploració ;
+	DO _3s80z0tbf ;
+	IN LOCFILE("\COMISIONESVEND\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
+ON SELECTION BAR 5 OF exploració ;
+	DO _3s80z0tbg ;
+	IN LOCFILE("\COMISIONESVEND\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
+ON SELECTION BAR 6 OF exploració ;
+	DO _3s80z0tbh ;
+	IN LOCFILE("\COMISIONESVEND\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
+ON SELECTION BAR 7 OF exploració ;
+	DO _3s80z0tbi ;
+	IN LOCFILE("\COMISIONESVEND\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
+ON SELECTION BAR 8 OF exploració ;
+	DO _3s80z0tbj ;
+	IN LOCFILE("\COMISIONESVEND\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
+ON SELECTION BAR 9 OF exploració ;
+	DO _3s80z0tbk ;
+	IN LOCFILE("\COMISIONESVEND\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
+ON SELECTION BAR 10 OF exploració ;
+	DO _3s80z0tbl ;
+	IN LOCFILE("\COMISIONESVEND\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
+ON SELECTION BAR 11 OF exploració ;
+	DO _3s80z0tbm ;
+	IN LOCFILE("\COMISIONESVEND\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
+ON SELECTION BAR 12 OF exploració ;
+	DO _3s80z0tbn ;
+	IN LOCFILE("\COMISIONESVEND\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
+
+
+*       *********************************************************
+*       *                                                         
+*       * _3S80Z0TBB  ON SELECTION BAR 13 OF POPUP archivo        
+*       *                                                         
+*       * Procedure Origin:                                       
+*       *                                                         
+*       * From Menu:  MENUMOVIMIENTO.MPR,            Record:   18 
+*       * Called By:  ON SELECTION BAR 13 OF POPUP archivo        
+*       * Prompt:     Cerrar Session                              
+*       * Snippet:    1                                           
+*       *                                                         
+*       *********************************************************
+*
+PROCEDURE _3s80z0tbb
+SET SYSMENU OFF
+pcBarra.Hide()
+DO FORM frmacceso.scx
+
+
+
+*       *********************************************************
+*       *                                                         
+*       * _3S80Z0TBC  ON SELECTION BAR 1 OF POPUP exploració      
+*       *                                                         
+*       * Procedure Origin:                                       
+*       *                                                         
+*       * From Menu:  MENUMOVIMIENTO.MPR,            Record:   34 
+*       * Called By:  ON SELECTION BAR 1 OF POPUP exploració      
+*       * Prompt:     Primero                                     
+*       * Snippet:    2                                           
+*       *                                                         
+*       *********************************************************
+*
+PROCEDURE _3s80z0tbc
+IF _screen.formCount > 0 THEN
+	_Screen.ActiveForm.Primero()
+ENDIF
+
+
+*       *********************************************************
+*       *                                                         
+*       * _3S80Z0TBD  ON SELECTION BAR 2 OF POPUP exploració      
+*       *                                                         
+*       * Procedure Origin:                                       
+*       *                                                         
+*       * From Menu:  MENUMOVIMIENTO.MPR,            Record:   35 
+*       * Called By:  ON SELECTION BAR 2 OF POPUP exploració      
+*       * Prompt:     Anterior                                    
+*       * Snippet:    3                                           
+*       *                                                         
+*       *********************************************************
+*
+PROCEDURE _3s80z0tbd
+IF _screen.formCount > 0 THEN
+	_Screen.ActiveForm.Anterior()
+ENDIF
+
+
+*       *********************************************************
+*       *                                                         
+*       * _3S80Z0TBE  ON SELECTION BAR 3 OF POPUP exploració      
+*       *                                                         
+*       * Procedure Origin:                                       
+*       *                                                         
+*       * From Menu:  MENUMOVIMIENTO.MPR,            Record:   36 
+*       * Called By:  ON SELECTION BAR 3 OF POPUP exploració      
+*       * Prompt:     Siguiente                                   
+*       * Snippet:    4                                           
+*       *                                                         
+*       *********************************************************
+*
+PROCEDURE _3s80z0tbe
+IF _screen.formCount > 0 THEN
+	_Screen.ActiveForm.Siguiente()
+ENDIF
+
+
+*       *********************************************************
+*       *                                                         
+*       * _3S80Z0TBF  ON SELECTION BAR 4 OF POPUP exploració      
+*       *                                                         
+*       * Procedure Origin:                                       
+*       *                                                         
+*       * From Menu:  MENUMOVIMIENTO.MPR,            Record:   37 
+*       * Called By:  ON SELECTION BAR 4 OF POPUP exploració      
+*       * Prompt:     Ultimo                                      
+*       * Snippet:    5                                           
+*       *                                                         
+*       *********************************************************
+*
+PROCEDURE _3s80z0tbf
+IF _screen.formCount > 0 THEN
+	_Screen.ActiveForm.Ultimo()
+ENDIF
+
+
+*       *********************************************************
+*       *                                                         
+*       * _3S80Z0TBG  ON SELECTION BAR 5 OF POPUP exploració      
+*       *                                                         
+*       * Procedure Origin:                                       
+*       *                                                         
+*       * From Menu:  MENUMOVIMIENTO.MPR,            Record:   38 
+*       * Called By:  ON SELECTION BAR 5 OF POPUP exploració      
+*       * Prompt:     Nuevo                                       
+*       * Snippet:    6                                           
+*       *                                                         
+*       *********************************************************
+*
+PROCEDURE _3s80z0tbg
+IF _screen.formCount > 0 THEN
+	_Screen.ActiveForm.Nuevo()
+ENDIF
+
+
+*       *********************************************************
+*       *                                                         
+*       * _3S80Z0TBH  ON SELECTION BAR 6 OF POPUP exploració      
+*       *                                                         
+*       * Procedure Origin:                                       
+*       *                                                         
+*       * From Menu:  MENUMOVIMIENTO.MPR,            Record:   39 
+*       * Called By:  ON SELECTION BAR 6 OF POPUP exploració      
+*       * Prompt:     Modificar                                   
+*       * Snippet:    7                                           
+*       *                                                         
+*       *********************************************************
+*
+PROCEDURE _3s80z0tbh
+IF _screen.formCount > 0 THEN
+	_Screen.ActiveForm.Modificar()
+ENDIF
+
+
+*       *********************************************************
+*       *                                                         
+*       * _3S80Z0TBI  ON SELECTION BAR 7 OF POPUP exploració      
+*       *                                                         
+*       * Procedure Origin:                                       
+*       *                                                         
+*       * From Menu:  MENUMOVIMIENTO.MPR,            Record:   40 
+*       * Called By:  ON SELECTION BAR 7 OF POPUP exploració      
+*       * Prompt:     Eliminar                                    
+*       * Snippet:    8                                           
+*       *                                                         
+*       *********************************************************
+*
+PROCEDURE _3s80z0tbi
+IF _screen.formCount > 0 THEN
+	_Screen.ActiveForm.Eliminar()
+ENDIF
+
+
+*       *********************************************************
+*       *                                                         
+*       * _3S80Z0TBJ  ON SELECTION BAR 8 OF POPUP exploració      
+*       *                                                         
+*       * Procedure Origin:                                       
+*       *                                                         
+*       * From Menu:  MENUMOVIMIENTO.MPR,            Record:   41 
+*       * Called By:  ON SELECTION BAR 8 OF POPUP exploració      
+*       * Prompt:     Guardar                                     
+*       * Snippet:    9                                           
+*       *                                                         
+*       *********************************************************
+*
+PROCEDURE _3s80z0tbj
+IF _screen.formCount > 0 THEN
+	_Screen.ActiveForm.Guardar()
+ENDIF
+
+
+*       *********************************************************
+*       *                                                         
+*       * _3S80Z0TBK  ON SELECTION BAR 9 OF POPUP exploració      
+*       *                                                         
+*       * Procedure Origin:                                       
+*       *                                                         
+*       * From Menu:  MENUMOVIMIENTO.MPR,            Record:   42 
+*       * Called By:  ON SELECTION BAR 9 OF POPUP exploració      
+*       * Prompt:     Cancelar                                    
+*       * Snippet:    10                                          
+*       *                                                         
+*       *********************************************************
+*
+PROCEDURE _3s80z0tbk
+IF _screen.formCount > 0 THEN
+	_Screen.ActiveForm.Cancelar()
+ENDIF
+
+
+*       *********************************************************
+*       *                                                         
+*       * _3S80Z0TBL  ON SELECTION BAR 10 OF POPUP exploració     
+*       *                                                         
+*       * Procedure Origin:                                       
+*       *                                                         
+*       * From Menu:  MENUMOVIMIENTO.MPR,            Record:   43 
+*       * Called By:  ON SELECTION BAR 10 OF POPUP exploració     
+*       * Prompt:     Buscar                                      
+*       * Snippet:    11                                          
+*       *                                                         
+*       *********************************************************
+*
+PROCEDURE _3s80z0tbl
+IF _screen.formCount > 0 THEN
+	_Screen.ActiveForm.Buscar()
+ENDIF
+
+
+*       *********************************************************
+*       *                                                         
+*       * _3S80Z0TBM  ON SELECTION BAR 11 OF POPUP exploració     
+*       *                                                         
+*       * Procedure Origin:                                       
+*       *                                                         
+*       * From Menu:  MENUMOVIMIENTO.MPR,            Record:   44 
+*       * Called By:  ON SELECTION BAR 11 OF POPUP exploració     
+*       * Prompt:     Imprimir                                    
+*       * Snippet:    12                                          
+*       *                                                         
+*       *********************************************************
+*
+PROCEDURE _3s80z0tbm
+IF _screen.formCount <> 0 THEN
+	_Screen.ActiveForm.Imprimir()
+ENDIF
+
+
+*       *********************************************************
+*       *                                                         
+*       * _3S80Z0TBN  ON SELECTION BAR 12 OF POPUP exploració     
+*       *                                                         
+*       * Procedure Origin:                                       
+*       *                                                         
+*       * From Menu:  MENUMOVIMIENTO.MPR,            Record:   45 
+*       * Called By:  ON SELECTION BAR 12 OF POPUP exploració     
+*       * Prompt:     Cerrar                                      
+*       * Snippet:    13                                          
+*       *                                                         
+*       *********************************************************
+*
+PROCEDURE _3s80z0tbn
+IF _screen.formCount > 0 THEN
+	_Screen.ActiveForm.Cerrar()
+ENDIF

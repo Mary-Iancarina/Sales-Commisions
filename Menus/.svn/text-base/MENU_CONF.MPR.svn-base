@@ -1,0 +1,40 @@
+*       *********************************************************
+*       *                                                         
+*       * 05/13/13            MENU_CONF.MPR             16:20:24  
+*       *                                                         
+*       *********************************************************
+*       *                                                         
+*       * Carlos Parada                                           
+*       *                                                         
+*       * Copyright (C) 2013 Iancarina                            
+*       * Parque Industrial los Llanos KM185 Via Guanar           
+*       * Araure, Portu  3303                                        
+*       * Venezuela                                         
+*       *                                                         
+*       * Descripción:                                            
+*       * Este programa se generó automáticamente por GENMENU.    
+*       *                                                         
+*       *********************************************************
+
+
+*       *********************************************************
+*       *                                                         
+*       *                    Definición de menú                   
+*       *                                                         
+*       *********************************************************
+*
+
+SET SYSMENU TO
+SET SYSMENU AUTOMATIC
+
+DEFINE PAD _3s80z0tag OF _MSYSMENU PROMPT "\<Archivo" COLOR SCHEME 3 ;
+	KEY ALT+A, ""
+ON PAD _3s80z0tag OF _MSYSMENU ACTIVATE POPUP archivo
+
+DEFINE POPUP archivo MARGIN RELATIVE SHADOW COLOR SCHEME 4
+DEFINE BAR 1 OF archivo PROMPT "\<Configurar"
+DEFINE BAR 2 OF archivo PROMPT "\<Importar"
+DEFINE BAR 3 OF archivo PROMPT "\-"
+DEFINE BAR 4 OF archivo PROMPT "\<Salir" ;
+	KEY ALT+F4, "ALT+F4"
+ON SELECTION BAR 4 OF archivo quit

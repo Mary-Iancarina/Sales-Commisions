@@ -1,0 +1,975 @@
+CREATE DATABASE `bdcomisiones` /*!40100 DEFAULT CHARACTER SET latin1 */;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tbonos`;
+CREATE TABLE  `bdcomisiones`.`tbonos` (
+  `cId_Bono` varchar(2) NOT NULL,
+  `cDescripcion` varchar(60) default '',
+  `cId_Usuario` varchar(20) default '',
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`cId_Bono`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tclientes`;
+CREATE TABLE  `bdcomisiones`.`tclientes` (
+  `nId_Cliente` int(10) NOT NULL default '0',
+  `cDescripcion` varchar(60) default NULL,
+  `cId_Usuario` varchar(20) default NULL,
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `nid_TipoCli` int(3) default '0',
+  PRIMARY KEY  (`nId_Cliente`),
+  KEY `nId_Cliente` (`nId_Cliente`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tcomisiones_ventas`;
+CREATE TABLE  `bdcomisiones`.`tcomisiones_ventas` (
+  `nId_ConfigCal` int(20) default '0',
+  `nId_Comisionista` int(5) default '0',
+  `cId_Grupo` varchar(4) default NULL,
+  `nVenta` double(15,2) default '0.00',
+  `nDevoluciones` double(15,2) default '0.00',
+  `nOtrasAsignaciones` double(15,2) default '0.00',
+  `nBono_Asig` double(15,2) default '0.00',
+  `nOtrasDeducciones` double(15,2) default '0.00',
+  `nPorcBono` double(15,2) default '0.00'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tcomisionescob`;
+CREATE TABLE  `bdcomisiones`.`tcomisionescob` (
+  `nId_ConfigCal` int(10) NOT NULL default '0',
+  `nTipo` int(11) default '0',
+  `nDocOri` int(10) default '0',
+  `nId_Cliente` int(5) default '0',
+  `nId_Numero` int(10) default '0',
+  `dFechaEmision` date default NULL,
+  `dFechaVenc` date default NULL,
+  `dFechaCanc` date default NULL,
+  `nAntiguedad` int(5) NOT NULL default '0',
+  `nPorcBono` int(3) NOT NULL default '0',
+  `nFactor` double(10,7) default '0.0000000',
+  `nComisionable` double(15,2) default '0.00',
+  `nComision` double(15,2) default '0.00',
+  `nVentasAnt` double(15,2) default '0.00',
+  `nVentasAct` double(15,2) default '0.00',
+  `nPromedio` double(15,2) default '0.00',
+  `nId_Comisionista` int(5) default '0',
+  `nMonto_Doc` double(15,2) default '0.00',
+  `dFechaE_ND` date default NULL,
+  `dFechaV_ND` date default NULL,
+  `nBono` double(15,2) default '0.00'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tcomisionistas`;
+CREATE TABLE  `bdcomisiones`.`tcomisionistas` (
+  `nId_Comisionista` int(10) NOT NULL default '0',
+  `cNombre` varchar(60) default NULL,
+  `cId_Sucursal` varchar(2) NOT NULL,
+  `cId_Usuario` varchar(20) default NULL,
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `cId_TipoC` varchar(20) default NULL,
+  `nProd` int(11) default '0',
+  `nClien` int(11) default '0',
+  `nCom` int(11) default '0',
+  `nActivo` int(11) default '0',
+  PRIMARY KEY  (`nId_Comisionista`),
+  KEY `nId_Comisionista` (`nId_Comisionista`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tconfig`;
+CREATE TABLE  `bdcomisiones`.`tconfig` (
+  `nImportacion` int(10) default '0',
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `cId_Usuario` varchar(20) default NULL,
+  `nConfig_Calculos` int(10) default '0',
+  `nCalculos` int(10) default '0',
+  `nCodigo` int(11) default '1',
+  `cIMagen` varchar(200) default NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tconfig_calculos`;
+CREATE TABLE  `bdcomisiones`.`tconfig_calculos` (
+  `nId_ConfigCal` int(20) NOT NULL default '0',
+  `dFecha_Desde` date default NULL,
+  `dFecha_Hasta` date default NULL,
+  `cDescripcion` varchar(60) default NULL,
+  `nStatus` int(11) default '0',
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `cId_Usuario` varchar(20) default NULL,
+  `cId_Sucursal` varchar(3) default NULL,
+  PRIMARY KEY  (`nId_ConfigCal`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tconfig_importacion`;
+CREATE TABLE  `bdcomisiones`.`tconfig_importacion` (
+  `nId_Importacion` int(11) NOT NULL default '0',
+  `cDescripcion` varchar(60) default NULL,
+  `cOrigen_Datos` varchar(150) default NULL,
+  `cSql` varchar(600) default NULL,
+  `cTabla_Des` varchar(50) default NULL,
+  `cId_Usuario` varchar(20) default NULL,
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `nImpDiaria` int(11) default '0',
+  `nElimina` int(11) default '0',
+  `cId_Sucursal` varchar(2) default NULL,
+  `nVfp` int(11) default '0',
+  PRIMARY KEY  (`nId_Importacion`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tdetalle_comi_bono`;
+CREATE TABLE  `bdcomisiones`.`tdetalle_comi_bono` (
+  `cId_TipoC` varchar(2) default '',
+  `cId_Bono` varchar(2) default '',
+  `nMontoBono` double(15,2) default '0.00'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tdetalle_config_comi`;
+CREATE TABLE  `bdcomisiones`.`tdetalle_config_comi` (
+  `nId_Comisionista` int(2) default '0',
+  `nTipoPar` int(11) default '0',
+  `nId_cliente` int(5) default '0',
+  `nId_Comi` int(2) default '0',
+  `nPorcVenta` double(10,2) default '100.00',
+  `nRestaven` int(11) default '0',
+  `cId_sucursal` varchar(2) default NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tdetalle_configcalculos`;
+CREATE TABLE  `bdcomisiones`.`tdetalle_configcalculos` (
+  `nId_ConfigCal` int(20) default '0',
+  `nId_Comisionista` int(5) default '0',
+  `cId_Grupo` varchar(4) default NULL,
+  `nCuota` int(10) default '0',
+  `nPor_Bono` double(15,2) default '0.00',
+  `nMontoBono` double(15,2) default '0.00',
+  `nPagxCuota` int(11) default '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tdetalle_documentos`;
+CREATE TABLE  `bdcomisiones`.`tdetalle_documentos` (
+  `nId_Numero` int(20) NOT NULL default '0',
+  `nTipo` int(11) NOT NULL default '0',
+  `cId_Producto` varchar(22) NOT NULL,
+  `nCantidad` int(20) default '0',
+  `nPrecio` double(15,2) default '0.00',
+  `nMonto_Tot` double(15,2) default '0.00',
+  `nLinea` int(5) NOT NULL default '0',
+  `Tip_Reg` int(3) NOT NULL default '0',
+  `cid_sucursal` varchar(2) NOT NULL,
+  PRIMARY KEY  (`nId_Numero`,`nTipo`,`nLinea`,`Tip_Reg`,`cid_sucursal`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tdetalle_importacion`;
+CREATE TABLE  `bdcomisiones`.`tdetalle_importacion` (
+  `nId_Importacion` int(10) default '0',
+  `cCampoOrigen` varchar(60) default NULL,
+  `cCampoDestino` varchar(60) default NULL,
+  `nValor` int(11) default '0',
+  `nId` int(11) default '0',
+  `nImportar` int(11) default '1'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tdetalle_par_cob`;
+CREATE TABLE  `bdcomisiones`.`tdetalle_par_cob` (
+  `nId_Parametro` int(11) default '0',
+  `nId_TipoCli` int(4) default '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tdetalles_bonos_grupos`;
+CREATE TABLE  `bdcomisiones`.`tdetalles_bonos_grupos` (
+  `cId_Bono` varchar(2) default '',
+  `cId_Grupo` varchar(4) default ''
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tdetalles_grupos_prod`;
+CREATE TABLE  `bdcomisiones`.`tdetalles_grupos_prod` (
+  `cId_Producto` varchar(22) NOT NULL default '',
+  `cId_Grupo` varchar(4) NOT NULL default ''
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tdocumentos`;
+CREATE TABLE  `bdcomisiones`.`tdocumentos` (
+  `nId_Numero` int(20) NOT NULL default '0',
+  `nTipo` int(11) NOT NULL default '0',
+  `dFecha` date default NULL,
+  `nMonto_Tot` double(15,2) default '0.00',
+  `nId_Comisionista` int(5) default '0',
+  `nId_Cliente` int(5) default '0',
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `cId_Usuario` varchar(20) default NULL,
+  `dFechaVenc` date default NULL,
+  `cId_Sucursal` varchar(2) NOT NULL,
+  PRIMARY KEY  (`nId_Numero`,`cId_Sucursal`,`nTipo`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tgrupos_productos`;
+CREATE TABLE  `bdcomisiones`.`tgrupos_productos` (
+  `cId_Grupo` varchar(4) NOT NULL default '',
+  `cDescripcion` varchar(60) default '',
+  `cid_Usuario` varchar(20) default '',
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`cId_Grupo`),
+  KEY `cId_Grupo` (`cId_Grupo`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tmovimientos`;
+CREATE TABLE  `bdcomisiones`.`tmovimientos` (
+  `nId_Recibo` int(10) NOT NULL default '0',
+  `nId_Numero` int(10) NOT NULL default '0',
+  `nId_Comisionista` int(5) default '0',
+  `nId_Cliente` int(5) default '0',
+  `dFecha` date default NULL,
+  `dFechaVenc` date default NULL,
+  `nId_Tipo` int(3) default '0',
+  `nMonto` double(15,2) default '0.00',
+  `nLinea` int(11) NOT NULL auto_increment,
+  `cId_Sucursal` varchar(2) NOT NULL,
+  PRIMARY KEY  (`nLinea`,`nId_Recibo`,`nId_Numero`,`cId_Sucursal`)
+) ENGINE=InnoDB AUTO_INCREMENT=473182 DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tnotasdebito`;
+CREATE TABLE  `bdcomisiones`.`tnotasdebito` (
+  `nId_ND` int(20) NOT NULL default '0',
+  `nTipo` int(11) NOT NULL default '0',
+  `dFecha` date default NULL,
+  `nMonto_Tot` double(15,2) default '0.00',
+  `nId_Comisionista` int(5) default '0',
+  `nId_Cliente` int(5) default '0',
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `cId_Usuario` varchar(20) default NULL,
+  `dFechaVenc` date default NULL,
+  `cId_Sucursal` varchar(2) NOT NULL,
+  `nId_Numero` int(10) default '0',
+  PRIMARY KEY  (`nId_ND`,`cId_Sucursal`,`nTipo`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tparametros_com_cobranzas`;
+CREATE TABLE  `bdcomisiones`.`tparametros_com_cobranzas` (
+  `nId_Parametro` int(10) unsigned NOT NULL auto_increment,
+  `nDiasVencDesde` int(10) default '0',
+  `nDiasVencHasta` int(10) default '0',
+  `nPorcComision` decimal(15,2) default '0.00',
+  PRIMARY KEY  (`nId_Parametro`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tparametros_com_ventas`;
+CREATE TABLE  `bdcomisiones`.`tparametros_com_ventas` (
+  `nId_Parametro` int(10) unsigned NOT NULL auto_increment,
+  `nCumpDesde` decimal(15,2) default '0.00',
+  `nCumpHasta` decimal(15,2) default '0.00',
+  `nPorcPagar` decimal(15,2) default '0.00',
+  PRIMARY KEY  (`nId_Parametro`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tproductos`;
+CREATE TABLE  `bdcomisiones`.`tproductos` (
+  `cId_Producto` varchar(22) NOT NULL default '',
+  `cDescripcion` varchar(60) default '',
+  `cFactor` varchar(2) default '',
+  `nValor` decimal(10,2) default '0.00',
+  `cId_Usuario` varchar(20) default NULL,
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`cId_Producto`),
+  KEY `cId_Producto` (`cId_Producto`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tsucursales`;
+CREATE TABLE  `bdcomisiones`.`tsucursales` (
+  `cId_Sucursal` varchar(2) NOT NULL,
+  `cDescripcion` varchar(60) default '',
+  `cId_Usuario` varchar(20) default '',
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`cId_Sucursal`),
+  KEY `cId_Sucursal` (`cId_Sucursal`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`ttipo_clientes`;
+CREATE TABLE  `bdcomisiones`.`ttipo_clientes` (
+  `nId_TipoCli` int(4) NOT NULL default '0',
+  `cDescripcion` varchar(60) default NULL,
+  `cId_Usuario` varchar(20) default NULL,
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`nId_TipoCli`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`ttipo_comisionistas`;
+CREATE TABLE  `bdcomisiones`.`ttipo_comisionistas` (
+  `cId_TipoC` varchar(2) NOT NULL default '',
+  `cDescripcion` varchar(60) default '',
+  `cId_Usuario` varchar(20) default '',
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`cId_TipoC`),
+  KEY `cId_TipoC` (`cId_TipoC`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`ttipo_movimientos`;
+CREATE TABLE  `bdcomisiones`.`ttipo_movimientos` (
+  `nId_Tipo` int(3) NOT NULL default '0',
+  `cDescripcion` varchar(60) default NULL,
+  `nComisiona` int(11) default '0',
+  `cid_usuario` varchar(20) default NULL,
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`nId_Tipo`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `bdcomisiones`.`tusuarios`;
+CREATE TABLE  `bdcomisiones`.`tusuarios` (
+  `cId_Login` varchar(20) NOT NULL default '',
+  `cPassword` varchar(20) NOT NULL default '',
+  `cDescripcion` varchar(60) default '',
+  `nSucursales` int(11) default '0',
+  `cSucursales` varchar(100) default NULL,
+  `nComisionistas` int(11) default '0',
+  `nCalculos` int(11) default '0',
+  `nReportes` int(11) default '0',
+  `nUsuarios` int(11) default '0',
+  `nConfig_Importacion` int(11) default '0',
+  `nImportacion` int(11) default '0',
+  `nParametros_com` int(11) default '0',
+  `nProductos` int(11) default '0',
+  `nGruposProd` int(11) default '0',
+  `nClientes` int(11) default '0',
+  `nRespaldar` int(11) default '0',
+  `nRestaurar` int(11) default '0',
+  `dFecha_Act` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `cId_Usuario` varchar(20) NOT NULL,
+  `nTipo_Comi` int(11) default '0',
+  `nBonos` int(11) default '0',
+  `nConfig_Sistema` int(11) default '0',
+  `nConfig_Calculos` int(11) default '0',
+  `nTiposCliente` int(11) default '0',
+  `nTipoMov` int(11) default '0',
+  PRIMARY KEY  (`cId_Login`),
+  KEY `cId_Login` (`cId_Login`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `bdcomisiones`.`SP_AgregarConfCalculo`$$
+CREATE DEFINER=`root`@`%` PROCEDURE  `bdcomisiones`.`SP_AgregarConfCalculo`(tcValor Varchar(2))
+BEGIN
+   Declare nNumero,nError int;
+   Set nNumero =(Select nConfig_Calculos From tConfig);
+   Start Transaction;
+   Update tConfig Set nConfig_Calculos = nNumero + 1;
+   Insert Into tconfig_Calculos(nId_ConfigCal,cId_Sucursal) Values(nNumero,tcValor);
+   /*Insertando El detalle*/
+   Insert into tDetalle_ConfigCalculos SELECT nNumero,TC.nId_Comisionista,TGP.cId_Grupo,0,0,0,0 FROM tComisionistas TC Inner Join tTipo_Comisionistas TT On TC.cId_TipoC=TT.cId_TipoC Inner Join tDetalle_Comi_Bono TDCB On TT.cId_TipoC=TDCB.cId_TipoC Inner Join tdetalles_bonos_grupos TDBG ON TDBG.cId_Bono=TDCB.cId_Bono Inner Join tGrupos_Productos TGP On TDBG.cId_Grupo=TGP.cId_Grupo Where TC.nActivo = 1 And TC.cId_Sucursal = tcValor;
+   Set nError =(Select @Error);
+   if(nError>0) then
+        ROLLBACK;
+   else
+        COMMIT;
+   end if;
+   Select nNumero;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `bdcomisiones`.`SP_AgregarConfiguracion`$$
+CREATE DEFINER=`root`@`%` PROCEDURE  `bdcomisiones`.`SP_AgregarConfiguracion`()
+BEGIN
+   Declare nNumero,nError int;
+   Set nNumero =(Select nImportacion From tConfig);
+   Start Transaction;
+   Update tConfig Set nImportacion = nNumero + 1;
+   Insert Into tconfig_importacion(nId_Importacion) Values(nNumero);
+   Set nError =(Select @Error);
+   if(nError>0) then
+        ROLLBACK;
+   else
+        COMMIT;
+   end if;
+   Select nNumero; 
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `bdcomisiones`.`SP_CalcularComCob`$$
+CREATE DEFINER=`root`@`%` PROCEDURE  `bdcomisiones`.`SP_CalcularComCob`(tnValor Int)
+BEGIN
+
+  /*Declarando Variables*/
+  Declare ldFechaIniAct,ldFechaFinAct,ldFechaIniAnt,ldFechaFinAnt Date;
+  Declare lnVentasAct,lnVentasAnt,lnPromedio,lnMontoBono Double (15,2);
+  Declare lnId,lnComisionista Int(5);
+  Declare lcSucursal Varchar(2);
+  Declare nError Integer;
+
+  /*Asigno los valores iniciales*/
+  Set ldFechaIniAct = (Select dFecha_Desde From tConfig_Calculos Where nId_ConfigCal=tnValor);
+  Set ldFechaFinAct = (Select dFecha_Hasta From tConfig_Calculos Where nId_ConfigCal=tnValor);
+  Set lcSucursal    = (Select cId_Sucursal From tConfig_Calculos Where nId_ConfigCal=tnValor);
+  Set ldFechaIniAnt = DATE_SUB(ldFechaIniAct, INTERVAL 1 MONTH);
+  Set ldFechaFinAnt = DATE_SUB(ldFechaFinAct, INTERVAL 1 MONTH);
+  Set lnPromedio    = 0;
+  Set lnId          = 0;
+  Set lnVentasAct   = 0;
+  Set lnVentasAnt   = 0;
+  Set lnMontoBono   = 0;
+
+  Start  Transaction;
+  /*Creo una tabla tremporal para guardar los comisionistas que dependen de otros comisionistas*/
+  Create Temporary Table ttComiDep (nId_Comisionista Int(5));
+
+  /*Creo una tabla tremporal para guardar las ventas y el promedio de ventas*/
+  Create Temporary Table ttComiVent (nId_Comisionista Int(5),nVentasAnt Double(15,2),nVentasAct Double(15,2));
+
+  /*Creo una tabla temporal con los vendedores involucrados en el periodo para luego buscar las ventas*/
+  Create Temporary Table ttComi (/*nId Int(5) UNSIGNED NOT NULL Primary Key DEFAULT NULL AUTO_INCREMENT ,*/nId_Comisionista Int(5),nVentasAct Double(15,2),nVentasAnt Double(15,2));
+
+  /*Calculo las ventas totales del mes actual y del mes anterior*/
+  Insert Into ttComi (nId_Comisionista,nVentasAct,nVentasAnt)
+  Select tDocumentos.nId_Comisionista,Sum(if(nTipo In (10,11,12,13) and (dFecha Between ldFechaIniAct and ldFechaFinAct),nMonto_Tot,0)) /*Sumo todas las ventas*/ - Sum(if(nTipo In (14,15,16,17) And (dFecha Between ldFechaIniAct and ldFechaFinAct),nMonto_Tot,0))/*Sumo todas las Notas de Credito*/ As nVentasAct,
+         Sum(if(nTipo In (10,11,12,13) and (dFecha Between ldFechaIniAnt and ldFechaFinAnt),nMonto_Tot,0)) /*Sumo todas las ventas*/ - Sum(if(nTipo In (14,15,16,17) And (dFecha Between ldFechaIniAnt and ldFechaFinAnt),nMonto_Tot,0))/*Sumo todas las Notas de Credito*/ As nVentasAnt
+  From tDocumentos
+  Where nId_Comisionista In (Select Distinct tDetalle_ConfigCalculos.nId_Comisionista From tDetalle_ConfigCalculos Where nId_ConfigCal=tnValor)
+  Group By tDocumentos.nId_Comisionista;
+
+  /*Eliminando los calculos anteriores*/
+  Delete From tComisionesCob Where nId_ConfigCal = tnValor;
+
+  /*Calculando las comisiones por Cobros a facturas*/
+  Insert Into tComisionesCob(nId_ConfigCal,nTipo,nDocOri,nId_Cliente,nId_Numero,dFechaEmision,dFechaVenc,dFechaCanc,nAntiguedad,nPorcBono,nFactor,nComisionable,nMonto_Doc,nComision,nVentasAnt,nVentasAct,nPromedio,nId_Comisionista,nBono)
+  Select tnValor,1,0,TD.nId_Cliente,TD.nId_Numero,TD.dFecha As dEmision,TD.dFechaVenc,Max(TM.dFecha) As dCancelacion,DatedIff(Max(TM.dFecha),TD.dFecha) As Antiguedad,If(IsNull(TPCC.nPorcComision)=1,0,TPCC.nPorcComision),Sum(If(TTM.nComisiona=1,TM.nMonto,0))/((ttComi.nVentasAnt + ttComi.nVentasAct)/2) AS nFactor,Sum(If(TTM.nComisiona=1,TM.nMonto,0)) As nComisionables,TD.nMonto_Tot,((Select Sum(nMontoBono) From tDetalle_Comi_Bono Where tDetalle_Comi_Bono.cId_TipoC=TCO.cId_TipoC) * (If(IsNull(TPCC.nPorcComision)=1,0,TPCC.nPorcComision)/100))*(Sum(If(TTM.nComisiona=1,TM.nMonto,0))/((ttComi.nVentasAnt + ttComi.nVentasAct)/2)) As nComision,ttComi.nVentasAnt,nVentasAct,((ttComi.nVentasAnt + ttComi.nVentasAct)/2),TD.nId_Comisionista,(Select Sum(nMontoBono) From tDetalle_Comi_Bono Where tDetalle_Comi_Bono.cId_TipoC=TCO.cId_TipoC)
+  From tDocumentos TD Inner Join tMovimientos TM On TD.nId_Numero=TM.nId_Numero And TD.nId_Cliente = TM.nId_Cliente Left Join tTipo_Movimientos TTM On TM.nId_Tipo=TTM.nId_Tipo Left Join tClientes TC On TD.nId_Cliente = TC.nId_Cliente Left Join tComisionistas TCO On TCO.nId_Comisionista=TD.nId_Comisionista
+  Left Join tDetalle_Par_Cob TDPC On TDPC.nId_TipoCli = TC.nId_TipoCli Left Join tParametros_Com_cobranzas TPCC On TPCC.nId_Parametro = TDPC.nId_Parametro Inner Join ttComi On ttComi.nId_Comisionista=TCO.nId_Comisionista
+  Where TM.nId_Tipo<>6 And TM.nId_Tipo<>5
+  Group By TD.nId_Numero,TD.dFecha,TD.nId_Cliente,TD.nId_Comisionista,TPCC.nPorcComision,TPCC.nDiasVencDesde,TPCC.nDiasVencHasta
+  Having Sum(TM.nMonto)>=TD.nMonto_Tot - 0.5 And (Max(TM.dFecha) Between ldFechaIniAct And ldFechaFinAct) And (DatedIff(Max(TM.dFecha),TD.dFecha) Between TPCC.nDiasVencDesde And  TPCC.nDiasVencHasta)
+  Order By TD.nId_Comisionista,TD.nId_Cliente,TD.nId_Numero;
+
+  /*Calculando comisiones por cobros a notas de debito*/
+  Insert Into tComisionesCob(nId_ConfigCal,nTipo,nDocOri,nId_Cliente,nId_Numero,dFechaEmision,dFechaVenc,dFechaCanc,nAntiguedad,nPorcBono,nFactor,nComisionable,nMonto_Doc,nComision,nVentasAnt,nVentasAct,nPromedio,nId_Comisionista,nBono)
+  Select tnValor,2,TND.nId_Numero,TND.nId_Cliente,TND.nId_ND,TND.dFecha As dEmision,TND.dFechaVenc,Max(TM.dFecha) As dCancelacion,DatedIff(Max(TM.dFecha),TND.dFecha) As Antiguedad,If(IsNull(TPCC.nPorcComision)=1,0,TPCC.nPorcComision),Sum(If(TTM.nComisiona=1,TM.nMonto,0))/((ttComi.nVentasAnt + ttComi.nVentasAct)/2) AS nFactor,TND.nMonto_Tot As nComisionables,TND.nMonto_Tot,((Select Sum(nMontoBono) From tDetalle_Comi_Bono Where tDetalle_Comi_Bono.cId_TipoC=TCO.cId_TipoC) * (If(IsNull(TPCC.nPorcComision)=1,0,TPCC.nPorcComision)/100))*(Sum(If(TTM.nComisiona=1,TM.nMonto,0))/((ttComi.nVentasAnt + ttComi.nVentasAct)/2)) As nComision,ttComi.nVentasAnt,nVentasAct,((ttComi.nVentasAnt + ttComi.nVentasAct)/2),TND.nId_Comisionista,(Select Sum(nMontoBono) From tDetalle_Comi_Bono Where tDetalle_Comi_Bono.cId_TipoC=TCO.cId_TipoC)
+  From tNotasDebito TND Inner Join tMovimientos TM On TND.nId_ND=TM.nId_Numero And TND.nId_Cliente = TM.nId_Cliente Left Join tTipo_Movimientos TTM On TM.nId_Tipo=TTM.nId_Tipo Left Join tClientes TC On TND.nId_Cliente = TC.nId_Cliente Left Join tComisionistas TCO On TCO.nId_Comisionista=TND.nId_Comisionista
+  Left Join tDetalle_Par_Cob TDPC On TDPC.nId_TipoCli = TC.nId_TipoCli Left Join tParametros_Com_cobranzas TPCC On TPCC.nId_Parametro = TDPC.nId_Parametro Inner Join ttComi On ttComi.nId_Comisionista=TCO.nId_Comisionista
+  Where TM.nId_Tipo<>6 And TM.nId_Tipo<>5
+  Group By TND.nId_ND,TND.dFecha,TND.nMonto_Tot,TND.nId_Cliente,TND.nId_Comisionista,TPCC.nPorcComision,TPCC.nDiasVencDesde,TPCC.nDiasVencHasta
+  Having Sum(TM.nMonto)>=TND.nMonto_Tot - 0.5 And (Max(TM.dFecha) Between ldFechaIniAct And ldFechaFinAct) And (DatedIff(Max(TM.dFecha),TND.dFecha) Between TPCC.nDiasVencDesde And  TPCC.nDiasVencHasta)
+  Order By TND.nId_Comisionista,TND.nId_Cliente,TND.nId_ND;
+
+  /*Calculando comisiones por notas de debito por cheques devueltos*/
+  Insert Into tComisionesCob(nId_ConfigCal,nTipo,nDocOri,nId_Cliente,nId_Numero,dFechaEmision,dFechaVenc,nAntiguedad,nPorcBono,nFactor,nComisionable,nMonto_Doc,nComision,nVentasAnt,nVentasAct,nPromedio,nId_Comisionista,dFechaE_ND,dFechaV_ND,nBono)
+  Select tnValor,3,TND.nId_Numero,TND.nId_Cliente,TND.nId_ND,TND.dFecha,TND.dFechaVenc,DatedIff(TND.dFecha,TND.dFecha) As Antiguedad,If(IsNull(TPCC.nPorcComision)=1,0,TPCC.nPorcComision),TND.nMonto_Tot/((ttComi.nVentasAnt + ttComi.nVentasAct)/2) AS nFactor,TND.nMonto_Tot As nComisionables,TND.nMonto_Tot,(((Select Sum(nMontoBono) From tDetalle_Comi_Bono Where tDetalle_Comi_Bono.cId_TipoC=TCO.cId_TipoC) * (If(IsNull(TPCC.nPorcComision)=1,0,TPCC.nPorcComision)/100))*(TND.nMonto_Tot/((ttComi.nVentasAnt + ttComi.nVentasAct)/2)))*-1 As nComision,ttComi.nVentasAnt,nVentasAct,((ttComi.nVentasAnt + ttComi.nVentasAct)/2),TND.nId_Comisionista,TND.dFecha,TND.dFechaVenc,(Select Sum(nMontoBono) From tDetalle_Comi_Bono Where tDetalle_Comi_Bono.cId_TipoC=TCO.cId_TipoC)
+  From tNotasDebito TND Left Join tDocumentos TD On TND.nId_Numero=TD.nId_Numero And TND.nId_Cliente=TD.nId_Cliente Left Join tMovimientos TM On TM.nId_Numero=TD.nId_Numero And TM.nId_Cliente=TD.nId_Cliente Left Join tTipo_Movimientos TTM On TM.nId_Tipo=TTM.nId_Tipo Left Join tClientes TC On TND.nId_Cliente = TC.nId_Cliente Left Join tComisionistas TCO On TCO.nId_Comisionista=TND.nId_Comisionista
+  Left Join tDetalle_Par_Cob TDPC On TDPC.nId_TipoCli = TC.nId_TipoCli Left Join tParametros_Com_cobranzas TPCC On TPCC.nId_Parametro = TDPC.nId_Parametro Inner Join ttComi On ttComi.nId_Comisionista=TCO.nId_Comisionista
+  Where TND.nTipo = 2
+  Group By TND.nId_ND,TND.dFecha,TND.nMonto_Tot,TND.nId_Cliente,TND.nId_Comisionista,TPCC.nPorcComision,TPCC.nDiasVencDesde,TPCC.nDiasVencHasta,TD.dFecha,TD.dFechaVenc
+  Having (TND.dFecha Between ldFechaIniAct And ldFechaFinAct) And (DatedIff(TND.dFecha,TND.dFecha) Between TPCC.nDiasVencDesde And  TPCC.nDiasVencHasta)
+  Order By TND.nId_Comisionista,TND.nId_Cliente,TND.nId_ND;
+
+  /*Calculando comisiones por cobros a notas de debito por cheques devueltos*/
+  Insert Into tComisionesCob(nId_ConfigCal,nTipo,nDocOri,nId_Cliente,nId_Numero,dFechaEmision,dFechaVenc,dFechaCanc,nAntiguedad,nPorcBono,nFactor,nComisionable,nMonto_Doc,nComision,nVentasAnt,nVentasAct,nPromedio,nId_Comisionista,dFechaE_ND,dFechaV_ND,nBono)
+  Select tnValor,4,TND.nId_Numero,TND.nId_Cliente,TND.nId_ND,TD.dFecha,TD.dFechaVenc,Max(TM.dFecha) As dCancelacion,DatedIff(Max(TM.dFecha),TD.dFecha) As Antiguedad,If(IsNull(TPCC.nPorcComision)=1,0,TPCC.nPorcComision),Sum(If(TTM.nComisiona=1,TM.nMonto,0))/((ttComi.nVentasAnt + ttComi.nVentasAct)/2) AS nFactor,Sum(If(TTM.nComisiona=1,TM.nMonto,0)) As nComisionables,TND.nMonto_Tot,((Select Sum(nMontoBono) From tDetalle_Comi_Bono Where tDetalle_Comi_Bono.cId_TipoC=TCO.cId_TipoC) * (If(IsNull(TPCC.nPorcComision)=1,0,TPCC.nPorcComision)/100))*(Sum(If(TTM.nComisiona=1,TM.nMonto,0))/((ttComi.nVentasAnt + ttComi.nVentasAct)/2)) As nComision,ttComi.nVentasAnt,nVentasAct,((ttComi.nVentasAnt + ttComi.nVentasAct)/2),TND.nId_Comisionista,TND.dFecha,TND.dFechaVenc,(Select Sum(nMontoBono) From tDetalle_Comi_Bono Where tDetalle_Comi_Bono.cId_TipoC=TCO.cId_TipoC)
+  From tNotasDebito TND Inner Join tMovimientos TM On TND.nId_ND=TM.nId_Numero And TND.nId_Cliente = TM.nId_Cliente Left Join tDocumentos TD On TD.nId_Numero=TND.nId_Numero And TD.nId_Cliente = TND.nId_Cliente Left Join tTipo_Movimientos TTM On TM.nId_Tipo=TTM.nId_Tipo Left Join tClientes TC On TND.nId_Cliente = TC.nId_Cliente Left Join tComisionistas TCO On TCO.nId_Comisionista=TND.nId_Comisionista
+  Left Join tDetalle_Par_Cob TDPC On TDPC.nId_TipoCli = TC.nId_TipoCli Left Join tParametros_Com_cobranzas TPCC On TPCC.nId_Parametro = TDPC.nId_Parametro Inner Join ttComi On ttComi.nId_Comisionista=TCO.nId_Comisionista
+  Where TND.nTipo = 2
+  Group By TND.nId_ND,TND.dFecha,TND.nMonto_Tot,TND.nId_Cliente,TND.nId_Comisionista,TPCC.nPorcComision,TPCC.nDiasVencDesde,TPCC.nDiasVencHasta,TD.dFecha,TD.dFechaVenc
+  Having Sum(TM.nMonto)>=TND.nMonto_Tot - 0.5 And (Max(TM.dFecha) Between ldFechaIniAct And ldFechaFinAct) And (DatedIff(Max(TM.dFecha),TD.dFecha) Between TPCC.nDiasVencDesde And  TPCC.nDiasVencHasta)
+  Order By TND.nId_Comisionista,TND.nId_Cliente,TND.nId_ND;
+
+  Insert Into ttComiDep (nId_Comisionista) Select Distinct TDCCO.nId_Comisionista From tconfig_Calculos TCC Inner Join tDetalle_configCalculos TDCC On TCC.nId_ConfigCal = TDCC.nId_configCal Inner Join tDetalle_Config_Comi TDCCO On TDCC.nId_Comisionista = TDCCO.nId_Comisionista Where TCC.nId_ConfigCal=tnValor;
+  While Exists(Select * From ttComiDep) Do
+    Set lnComisionista = (Select nId_Comisionista From ttComiDep Order By 1 Limit 1);
+    Set lnMontoBono    = (Select if(isNull(Sum(nMontoBono))=1,0,Sum(nMontoBono)) From tComisionistas TCO Left Join tDetalle_Comi_Bono TDCB On TCO.cId_TipoC=TDCB.cId_TipoC Where  TCO.nId_comisionista = lnComisionista);
+    Insert InTo ttComiVent (nId_Comisionista,nVentasAnt,nVentasAct) SELECT nId_Comisionista,nVentasAnt,nVentasAct FROM tComisionesCob Where nId_Comisionista In(Select Distinct TDCCO.nId_Comi From tconfig_Calculos TCC Inner Join tDetalle_configCalculos TDCC On TCC.nId_ConfigCal = TDCC.nId_configCal Inner Join tDetalle_Config_Comi TDCCO On TDCC.nId_Comisionista = TDCCO.nId_Comisionista Where TCC.dFecha_Desde = ldFechaIniAct And dFecha_Hasta = ldFechaFinAct And TDCCO.nId_Comisionista = lnComisionista) Group by nId_Comisionista;
+    Set lnVentasAct=(Select Sum(nVentasAct) From ttComiVent);
+    Set lnVentasAnt=(Select Sum(nVentasAnt) From ttComiVent);
+    Set lnPromedio =(lnVentasAct+lnVentasAnt)/2;
+
+    /*Calculando comisiones por cobros a notas de debito por cheques devueltos*/
+/*    Insert Into tComisionesCob(nId_ConfigCal,nTipo,nComisionable,nMonto_Doc,nComision,nVentasAnt,nVentasAct,nPromedio,nId_Comisionista)
+    Select tnValor,nTipo,Sum(nComisionable),Sum(nMonto_Doc),Sum((lnMontoBono*(nPorcBono/100))*(nComisionable/lnPromedio)),lnVentasAnt,lnVentasAct,lnPromedio,lnComisionista
+    From tComisionesCob
+    Where nId_Comisionista In(Select Distinct TDCCO.nId_Comi From tconfig_Calculos TCC Inner Join tDetalle_configCalculos TDCC On TCC.nId_ConfigCal = TDCC.nId_configCal Inner Join tDetalle_Config_Comi TDCCO On TDCC.nId_Comisionista = TDCCO.nId_Comisionista Where TCC.dFecha_Desde = ldFechaIniAct And dFecha_Hasta = ldFechaFinAct And TDCCO.nId_Comisionista = lnComisionista) And
+          nId_ConfigCal In(Select Distinct TCC.nId_ConfigCal From tconfig_Calculos TCC Inner Join tDetalle_configCalculos TDCC On TCC.nId_ConfigCal = TDCC.nId_configCal Inner Join tDetalle_Config_Comi TDCCO On TDCC.nId_Comisionista = TDCCO.nId_Comisionista Where TCC.dFecha_Desde = ldFechaIniAct And dFecha_Hasta = ldFechaFinAct And TDCCO.nId_Comisionista = lnComisionista)
+    Group By 1,2;*/
+    Insert Into tComisionesCob(nId_ConfigCal,nTipo,nComisionable,nMonto_Doc,nComision,nVentasAnt,nVentasAct,nPromedio,nId_Comisionista,nDocOri,nId_Cliente,nId_Numero,dFechaEmision,dFechaVenc,dFechaCanc,nAntiguedad,nPorcBono,nFactor,dFechaE_ND,dFechaV_ND,nBono)
+    Select tnValor,nTipo,nComisionable,nMonto_Doc,If(nTipo=3,(lnMontoBono*(nPorcBono/100))*(nComisionable/lnPromedio)*-1,(lnMontoBono*(nPorcBono/100))*(nComisionable/lnPromedio)),lnVentasAnt,lnVentasAct,lnPromedio,lnComisionista,nDocOri,nId_Cliente,nId_Numero,dFechaEmision,dFechaVenc,dFechaCanc,nAntiguedad,nPorcBono,(nComisionable/lnPromedio),dFechaE_ND,dFechaV_ND,lnMontoBono
+    From tComisionesCob
+    Where nId_Comisionista In(Select Distinct TDCCO.nId_Comi From tconfig_Calculos TCC Inner Join tDetalle_configCalculos TDCC On TCC.nId_ConfigCal = TDCC.nId_configCal Inner Join tDetalle_Config_Comi TDCCO On TDCC.nId_Comisionista = TDCCO.nId_Comisionista Where TCC.dFecha_Desde = ldFechaIniAct And dFecha_Hasta = ldFechaFinAct And TDCCO.nId_Comisionista = lnComisionista) And
+          nId_ConfigCal In(Select Distinct TCC.nId_ConfigCal From tconfig_Calculos TCC Inner Join tDetalle_configCalculos TDCC On TCC.nId_ConfigCal = TDCC.nId_configCal /*Inner Join tDetalle_Config_Comi TDCCO On TDCC.nId_Comisionista = TDCCO.nId_Comisionista */Where TCC.dFecha_Desde = ldFechaIniAct And TCC.dFecha_Hasta = ldFechaFinAct And TDCC.nId_Comisionista In (Select nId_Comisionista From ttComiVent));
+    Delete From ttComiVent;
+    Delete From ttComiDep Where nId_Comisionista = lnComisionista;
+  End While;
+
+  /*Si Ocurre un error en la transaccion se deshacen los cambios, sino se guardan*/
+  Set nError =(Select @Error);
+  If(nError>0) Then
+    RollBack;
+  Else
+    Commit;
+  End If;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `bdcomisiones`.`SP_CalcularComVentas`$$
+CREATE DEFINER=`root`@`%` PROCEDURE  `bdcomisiones`.`SP_CalcularComVentas`(tnValor Integer)
+BEGIN
+  /*Declarando variables para el procedimiento*/
+  Declare ldFechaD ,ldFechaH Date;
+  Declare lnCuota,lnId,nError,lnPagxCuota Int(10);
+  Declare lnPorV,lnMontoBono,lnPor_Bono,lnPor_BonoAsig,lnVenta,lnVentaCli,lnDescCli,lnPorcDes,lnDev,lnDesc,lnBono,lnBonoAsig,lnVentaTotal,lnCumplimiento Double(15,3);
+  Declare lnComi Int(10);
+  Declare lcGrupo Varchar(4);
+  Declare lcSucursal Varchar(4);
+  /*Inicializando las variables*/
+  Set lnCuota = 0;
+  Set lnMontoBono=0;
+  Set lnPor_Bono=0;
+  Set lnVenta=0;
+  Set lnPorV = 0;
+  Set lnBono=0;
+  Set lnBonoAsig =0.000;
+  Set lnComi=0;
+  Set lnVentaCli =0;
+  Set lnDescCli =0;
+  Set lcGrupo='';
+  Set lnVentaTotal=0;
+  Set lnCumplimiento = 0;
+  Set lnPor_BonoAsig = 0;
+  Set lcSucursal ='';
+  Set lnPagxCuota = 0;
+  /*Cargando el periodo de fecha de las comisiones*/
+  Set ldFechaD = (Select dFecha_Desde From tConfig_Calculos Where nId_ConfigCal=tnValor);
+  Set ldFechaH = (Select dFecha_Hasta From tConfig_Calculos Where nId_ConfigCal=tnValor);
+  Set lcSucursal = (Select cId_Sucursal From tConfig_Calculos Where nId_ConfigCal=tnValor);
+  Create Temporary Table ttCuotasBonos(nId Int(10) UNSIGNED NOT NULL Primary Key DEFAULT NULL AUTO_INCREMENT,nId_Comisionista Int(5),cId_Grupo Varchar(4),nCuota Int(10),nPor_Bono Double(15,2),nMonto_Bono Double(15,2),cId_Sucursal VarChar(2),nPagxCuota Int(3));
+  Insert Into ttCuotasBonos (nId_Comisionista,cId_Grupo,nCuota,nPor_Bono,nMonto_Bono,cId_Sucursal,nPagxCuota)Select nId_Comisionista,cId_Grupo,nCuota,nPor_Bono,nMontoBono,lcSucursal,nPagxCuota From tDetalle_ConfigCalculos Where nId_ConfigCal = tnValor And nId_Comisionista Not In (Select Distinct nId_Comisionista From tDetalle_config_Comi) /*And (nPor_Bono <>0 Or nMontoBono <>0)*/ Order By 1,Cast(cId_Grupo As Decimal);
+  Create Temporary Table ttVentasDevResta (nId_Cliente Int(10),cId_Producto Varchar(22),nTotal Double(15,2));
+  Create Temporary Table ttVentasDevSuma (cId_Producto Varchar(22),nTotal Double(15,2));
+
+  Start Transaction;
+
+  While Exists(Select * From ttCuotasBonos) Do
+      /*Cargando el comisionista, el grupo y el numero de registro*/
+      Set lnId        = (Select nId From ttCuotasBonos Order By nId Limit 1);
+      Set lcGrupo     = (Select cId_Grupo From ttCuotasBonos Where nId = lnId);
+      Set lnComi      = (Select nId_Comisionista From ttCuotasBonos Where nId = lnId);
+      Set lnCuota     = (Select nCuota From ttCuotasBonos Where nId = lnId);
+      Set lnMontoBono = (Select nMonto_Bono From ttCuotasBonos Where nId = lnId);
+      Set lnPor_Bono  = (Select nPor_Bono From ttCuotasBonos Where nId = lnId);
+      Set lnBono      = (Select TDCB.nMontoBono From tDetalle_Comi_Bono TDCB Inner Join tDetalles_Bonos_Grupos TDBG On TDCB.cId_Bono = TDBG.cId_Bono Inner Join tComisionistas TC ON TC.cId_TipoC = TDCB.cId_TipoC Where nId_Comisionista = lnComi And TDBG.cId_Grupo = lcGrupo);
+      Set lnPagxCuota = (Select nPagxCuota From ttCuotasBonos Where nId = lnId);
+      /*Asignando las ventas de el comisionista */
+      Delete From ttVentasDevSuma;
+      Insert Into ttVentasDevSuma (cId_Producto,nTotal) Select TP.cId_Producto,If(TP.cFactor='*',if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*TP.nValor,If(TP.cFactor='+',if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))+TP.nValor,If(TP.cFactor='-',if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))-TP.nValor,If(TP.cFactor='/',if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))/TP.nValor,0)))) As Total From tDocumentos TD Inner Join tDetalle_Documentos TDD On TD.nId_Numero = TDD.nId_Numero And TD.nTipo = TDD.nTipo And TD.cId_Sucursal = TDD.cId_Sucursal Inner Join tDetalles_Grupos_Prod TDGP On TDGP.cId_Producto = TDD.cId_Producto Inner Join tProductos TP On TP.cId_Producto = TDD.cId_Producto Where TD.nId_Comisionista = lnComi And TDGP.cId_Grupo = lcGrupo And (TD.dFecha >=ldFechaD And TD.dFecha<=ldFechaH) And TD.nTipo In (10,11,12,13) Group By 1;
+      Set lnVenta     = (Select IF(IsNull(Sum(nTotal))=1,0,Sum(nTotal)) From ttVentasDevSuma);
+      /*Asignando las devoluciones de el comisionista */
+      Delete From ttVentasDevSuma;
+      Insert Into ttVentasDevSuma (cId_Producto,nTotal) Select TP.cId_Producto,If(TP.cFactor='*',if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*TP.nValor,If(TP.cFactor='+',if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))+TP.nValor,If(TP.cFactor='-',if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))-TP.nValor,If(TP.cFactor='/',if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))/TP.nValor,0)))) As Total From tDocumentos TD Inner Join tDetalle_Documentos TDD On TD.nId_Numero = TDD.nId_Numero And TD.nTipo = TDD.nTipo And TD.cId_Sucursal = TDD.cId_Sucursal Inner Join tDetalles_Grupos_Prod TDGP On TDGP.cId_Producto = TDD.cId_Producto Inner Join tProductos TP On TP.cId_Producto = TDD.cId_Producto Where TD.nId_Comisionista = lnComi And TDGP.cId_Grupo = lcGrupo And (TD.dFecha >=ldFechaD And TD.dFecha<=ldFechaH) And TD.nTipo In (14,15,16,17) Group By 1;
+      Set lnDev       = (Select IF(IsNull(Sum(nTotal))=1,0,Sum(nTotal)) From ttVentasDevSuma);
+      /*Restando las ventas a clientes que pertenecen a otros comisionistas */
+      Delete From ttVentasDevResta;
+      Insert Into ttVentasDevResta (nId_Cliente,cId_Producto,nTotal) Select TD.nId_Cliente,TP.cId_Producto,If(TP.cFactor='*',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))*TP.nValor,If(TP.cFactor='+',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))+TP.nValor,If(TP.cFactor='-',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))-TP.nValor,If(TP.cFactor='/',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))/TP.nValor,0)))) As Total From tDocumentos TD Inner Join tDetalle_Documentos TDD On TD.nId_Numero = TDD.nId_Numero And TD.nTipo = TDD.nTipo And TD.cId_Sucursal = TDD.cId_Sucursal Inner Join tDetalle_Config_Comi TDC On TDC.nId_Cliente=TD.nId_Cliente Inner Join tDetalles_Grupos_Prod TDGP On TDGP.cId_Producto = TDD.cId_Producto Inner Join tProductos TP On TP.cId_Producto = TDD.cId_Producto Where TD.nId_Comisionista = lnComi And TDGP.cId_Grupo = lcGrupo And TDC.nTipoPar = 1 And TDC.nRestaVen=1 And (TD.dFecha >=ldFechaD And TD.dFecha<=ldFechaH) And TD.nTipo In (10,11,12,13) Group By 1,2;
+      Set lnVentaCli  = (Select IF(IsNull(Sum(nTotal))=1,0,Sum(nTotal)) From ttVentasDevResta);
+      /*Restando las devoluciones a clientes que pertenecen a otros comisionistas */
+      Delete From ttVentasDevResta;
+      Insert Into ttVentasDevResta (nId_Cliente,cId_Producto,nTotal) Select TD.nId_Cliente,TP.cId_Producto,If(TP.cFactor='*',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))*TP.nValor,If(TP.cFactor='+',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))+TP.nValor,If(TP.cFactor='-',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))-TP.nValor,If(TP.cFactor='/',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))/TP.nValor,0)))) As Total From tDocumentos TD Inner Join tDetalle_Documentos TDD On TD.nId_Numero = TDD.nId_Numero And TD.nTipo = TDD.nTipo And TD.cId_Sucursal = TDD.cId_Sucursal Inner Join tDetalle_Config_Comi TDC On TDC.nId_Cliente=TD.nId_Cliente Inner Join tDetalles_Grupos_Prod TDGP On TDGP.cId_Producto = TDD.cId_Producto Inner Join tProductos TP On TP.cId_Producto = TDD.cId_Producto Where TD.nId_Comisionista = lnComi And TDGP.cId_Grupo = lcGrupo And TDC.nTipoPar = 1 And TDC.nRestaVen=1 And (TD.dFecha >=ldFechaD And TD.dFecha<=ldFechaH) And TD.nTipo In (14,15,16,17) Group By 1,2;
+      Set lnDescCli   = (Select IF(IsNull(Sum(nTotal))=1,0,Sum(nTotal)) From ttVentasDevResta);
+      /*Porcentaje de ventas asignado a otros comisionistas*/
+      Set lnDesc      = (lnVentaCli-lnDescCli);
+      /*Calculando Ventas*/
+      Set lnVentaTotal = (If(IsNull(lnVenta)=1,0,lnVenta)) - (If(IsNull(lnDev)=1,0,lnDev)) - (If(IsNull(lnDesc)=1,0,lnDesc));
+      /*Calculando Cumplimiento*/
+      Set lnCumplimiento = If(IsNull((lnVentaTotal*100)/lnCuota)=1,0,(lnVentaTotal*100)/lnCuota);
+
+      If lnCumplimiento >= 100 And lnCumplimiento <= 130 Then
+        Set lnPor_BonoAsig = lnCumplimiento;
+      End If;
+
+      If lnCumplimiento > 130  Then
+        Set lnPor_BonoAsig = 130;
+      End If;
+
+      If lnCumplimiento < 100  Then
+        Set lnPor_BonoAsig = (Select nPorcPagar From tParametros_Com_Ventas Where nCumpDesde<=lnCumplimiento And nCumpHasta>=lnCumplimiento);
+        Set lnPor_BonoAsig = If(IsNull(lnPor_BonoAsig)=1,0,lnPor_BonoAsig);
+      End If;
+
+      If lnPagxCuota = 0 Then
+        Set lnPor_BonoAsig = 100;
+      End if;
+
+      Set lnPor_BonoAsig = Round(lnPor_BonoAsig);
+
+      If lnMontoBono = 0 Then
+        if Round(lnVentaTotal,2)>0.00 Then
+          Set lnBonoAsig = lnBono * (lnPor_Bono/100);
+          Set lnBonoAsig = lnBonoAsig * (lnPor_BonoAsig/100);
+          Set lnBonoAsig = Round(lnBonoAsig,2);
+        End If;
+      Else
+        if Round(lnVentaTotal,2) >0.00 Then
+          Set lnBonoAsig = Round(lnMontoBono * Round((lnPor_BonoAsig/100),2),2);
+        End If;
+      End if;
+      if Round(lnVentaTotal,2) =0.00 Then
+        Set lnBonoAsig = 0;
+      End If;
+
+      Insert Into tComisiones_Ventas(nId_ConfigCal,nId_Comisionista,cId_Grupo,nVenta,nDevoluciones,nOtrasAsignaciones,nOtrasDeducciones,nBono_Asig,nPorcBono)
+      Values (tnValor,lnComi,lcGrupo,lnVenta,lnDev,0,lnDesc,Round(lnBonoAsig,2),Round(lnPor_BonoAsig));
+
+      Delete From ttCuotasBonos Where nId = lnId;
+
+  End While;
+  Drop Table ttCuotasBonos;
+  Drop Table ttVentasDevResta;
+  Drop Table ttVentasDevSuma;
+  Call SP_CalcularComVentasCli(tnValor);
+  Drop Table ttCuotasBonos;
+  Drop Table ttVentasDevResta;
+  Drop Table ttVentasDevSuma;
+  Call SP_CalcularComVentasComi(tnValor);
+  Update tConfig_Calculos Set nStatus = 1 Where nId_ConfigCal = tnValor;
+  /*Si Ocurre un error en la transaccion se deshacen los cambios, sino se guardan*/
+  Set nError =(Select @Error);
+  if(nError>0) then
+    ROLLBACK;
+  else
+    COMMIT;
+  end if;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `bdcomisiones`.`SP_CalcularComVentasCli`$$
+CREATE DEFINER=`root`@`%` PROCEDURE  `bdcomisiones`.`SP_CalcularComVentasCli`(tnValor Int)
+BEGIN
+  /*Declarando variables para el procedimiento*/
+  Declare ldFechaD ,ldFechaH Date;
+  Declare lnPagxCuota,lnCuota,nError,lnId Int(10);
+  Declare lnPorV,lnMontoBono,lnPor_Bono,lnPor_BonoAsig,lnVenta,lnVentaCli,lnDescCli,lnVentaCli1,lnDescCli1,lnVentaCli2,lnDescCli2,lnPorcDes,lnDev,lnDesc,lnAsig,lnAsig1,lnBono,lnBonoAsig,lnVentaTotal,lnCumplimiento Double(15,3);
+  Declare lnComi Int(10);
+  Declare lcGrupo Varchar(4);
+  Declare lcSucursal Varchar(4);
+  /*Inicializando las variables*/
+  Set lnCuota = 0;
+  Set lnMontoBono=0;
+  Set lnPor_Bono=0;
+  Set lnVenta=0;
+  Set lnPorV = 0;
+  Set lnBono=0;
+  Set lnBonoAsig =0.000;
+  Set lnComi=0;
+  Set lnVentaCli =0;
+  Set lnDescCli =0;
+  Set lcGrupo='';
+  Set lnVentaTotal=0;
+  Set lnCumplimiento = 0;
+  Set lnPor_BonoAsig = 0;
+  Set lnAsig = 0;
+  Set lcSucursal ='';
+  set lnPagxCuota =0;
+  /*Cargando el periodo de fecha de las comisiones*/
+  Set ldFechaD = (Select dFecha_Desde From tConfig_Calculos Where nId_ConfigCal=tnValor);
+  Set ldFechaH = (Select dFecha_Hasta From tConfig_Calculos Where nId_ConfigCal=tnValor);
+  Set lcSucursal =(Select cId_Sucursal From tConfig_Calculos Where nId_ConfigCal=tnValor);
+
+  Create Temporary Table ttCuotasBonos(nId Int(10) UNSIGNED NOT NULL Primary Key DEFAULT NULL AUTO_INCREMENT,nId_Comisionista Int(5),cId_Grupo Varchar(4),nCuota Int(10),nPor_Bono Double(15,2),nMonto_Bono Double(15,2),cId_Sucursal VarChar(2),nPagxCuota Int(3));
+  Insert Into ttCuotasBonos (nId_Comisionista,cId_Grupo,nCuota,nPor_Bono,nMonto_Bono,cId_Sucursal,nPagxCuota)Select nId_Comisionista,cId_Grupo,nCuota,nPor_Bono,nMontoBono,lcSucursal,nPagxCuota From tDetalle_ConfigCalculos Where nId_ConfigCal = tnValor And nId_Comisionista In (Select Distinct nId_Comisionista From tDetalle_config_Comi Where nTipoPar=1) /*And (nPor_Bono <>0 Or nMontoBono <>0)*/ Order By 1,Cast(cId_Grupo As Decimal);
+  Create Temporary Table ttVentasDevResta (nId_Cliente Int(10),cId_Producto Varchar(22),nTotal Double(15,2));
+  Create Temporary Table ttVentasDevSuma (cId_Producto Varchar(22),nTotal Double(15,2));
+
+  Start Transaction;
+
+  While Exists(Select * From ttCuotasBonos) Do
+      /*Cargando el comisionista, el grupo y el numero de registro*/
+      Set lnId        = (Select nId From ttCuotasBonos Order By nId Limit 1);
+      Set lcGrupo     = (Select cId_Grupo From ttCuotasBonos Where nId = lnId);
+      Set lnComi      = (Select nId_Comisionista From ttCuotasBonos Where nId = lnId);
+      Set lnCuota     = (Select nCuota From ttCuotasBonos Where nId = lnId);
+      Set lnMontoBono = (Select nMonto_Bono From ttCuotasBonos Where nId = lnId);
+      Set lnPor_Bono  = (Select nPor_Bono From ttCuotasBonos Where nId = lnId);
+      Set lnPagxCuota = (Select nPagxCuota From ttCuotasBonos Where nId = lnId);
+      Set lnBono      = (Select TDCB.nMontoBono From tDetalle_Comi_Bono TDCB Inner Join tDetalles_Bonos_Grupos TDBG On TDCB.cId_Bono = TDBG.cId_Bono Inner Join tComisionistas TC ON TC.cId_TipoC = TDCB.cId_TipoC Where nId_Comisionista = lnComi And TDBG.cId_Grupo = lcGrupo);
+      /*Asignando las ventas de el comisionista */
+      Delete From ttVentasDevSuma;
+      Insert Into ttVentasDevSuma (cId_Producto,nTotal) Select TP.cId_Producto,If(TP.cFactor='*',if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*TP.nValor,If(TP.cFactor='+',if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))+TP.nValor,If(TP.cFactor='-',if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))-TP.nValor,If(TP.cFactor='/',if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))/TP.nValor,0)))) As Total From tDocumentos TD Inner Join tDetalle_Documentos TDD On TD.nId_Numero = TDD.nId_Numero And TD.nTipo = TDD.nTipo And TD.cId_Sucursal = TDD.cId_Sucursal Inner Join tDetalles_Grupos_Prod TDGP On TDGP.cId_Producto = TDD.cId_Producto Inner Join tProductos TP On TP.cId_Producto = TDD.cId_Producto Where TD.nId_Comisionista = lnComi And TDGP.cId_Grupo = lcGrupo And (TD.dFecha >=ldFechaD And TD.dFecha<=ldFechaH) And TD.nTipo In (10,11,12,13) Group By 1;
+      Set lnVenta     = (Select IF(IsNull(Sum(nTotal))=1,0,Sum(nTotal)) From ttVentasDevSuma);
+      /*Asignando las devoluciones de el comisionista */
+      Delete From ttVentasDevSuma;
+      Insert Into ttVentasDevSuma (cId_Producto,nTotal) Select TP.cId_Producto,If(TP.cFactor='*',if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*TP.nValor,If(TP.cFactor='+',if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))+TP.nValor,If(TP.cFactor='-',if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))-TP.nValor,If(TP.cFactor='/',if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))/TP.nValor,0)))) As Total From tDocumentos TD Inner Join tDetalle_Documentos TDD On TD.nId_Numero = TDD.nId_Numero And TD.nTipo = TDD.nTipo And TD.cId_Sucursal = TDD.cId_Sucursal Inner Join tDetalles_Grupos_Prod TDGP On TDGP.cId_Producto = TDD.cId_Producto Inner Join tProductos TP On TP.cId_Producto = TDD.cId_Producto Where TD.nId_Comisionista = lnComi And TDGP.cId_Grupo = lcGrupo And (TD.dFecha >=ldFechaD And TD.dFecha<=ldFechaH) And TD.nTipo In (14,15,16,17) Group By 1;
+      Set lnDev       = (Select IF(IsNull(Sum(nTotal))=1,0,Sum(nTotal)) From ttVentasDevSuma);
+      /*Restando las ventas a clientes que pertenecen a otros comisionistas */
+      Delete From ttVentasDevResta;
+      Insert Into ttVentasDevResta (nId_Cliente,cId_Producto,nTotal) Select TD.nId_Cliente,TP.cId_Producto,If(TP.cFactor='*',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))*TP.nValor,If(TP.cFactor='+',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))+TP.nValor,If(TP.cFactor='-',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))-TP.nValor,If(TP.cFactor='/',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))/TP.nValor,0)))) As Total From tDocumentos TD Inner Join tDetalle_Documentos TDD On TD.nId_Numero = TDD.nId_Numero And TD.nTipo = TDD.nTipo And TD.cId_Sucursal = TDD.cId_Sucursal Inner Join tDetalle_Config_Comi TDC On TDC.nId_Cliente=TD.nId_Cliente Inner Join tDetalles_Grupos_Prod TDGP On TDGP.cId_Producto = TDD.cId_Producto Inner Join tProductos TP On TP.cId_Producto = TDD.cId_Producto Where TD.nId_Comisionista = lnComi And TDGP.cId_Grupo = lcGrupo And TDC.nId_Comisionista <> lnComi And TDC.nTipoPar = 1 And TDC.nRestaVen=1 And (TD.dFecha >=ldFechaD And TD.dFecha<=ldFechaH) And TD.nTipo In (10,11,12,13) Group By 1,2;
+      Set lnVentaCli  = (Select IF(IsNull(Sum(nTotal))=1,0,Sum(nTotal)) From ttVentasDevResta);
+      /*Restando las devoluciones a clientes que pertenecen a otros comisionistas */
+      Delete From ttVentasDevResta;
+      Insert Into ttVentasDevResta (nId_Cliente,cId_Producto,nTotal) Select TD.nId_Cliente,TP.cId_Producto,If(TP.cFactor='*',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))*TP.nValor,If(TP.cFactor='+',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))+TP.nValor,If(TP.cFactor='-',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))-TP.nValor,If(TP.cFactor='/',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))/TP.nValor,0)))) As Total From tDocumentos TD Inner Join tDetalle_Documentos TDD On TD.nId_Numero = TDD.nId_Numero And TD.nTipo = TDD.nTipo And TD.cId_Sucursal = TDD.cId_Sucursal Inner Join tDetalle_Config_Comi TDC On TDC.nId_Cliente=TD.nId_Cliente Inner Join tDetalles_Grupos_Prod TDGP On TDGP.cId_Producto = TDD.cId_Producto Inner Join tProductos TP On TP.cId_Producto = TDD.cId_Producto Where TD.nId_Comisionista = lnComi And TDGP.cId_Grupo = lcGrupo And TDC.nId_Comisionista <> lnComi And TDC.nTipoPar = 1 And TDC.nRestaVen=1 And (TD.dFecha >=ldFechaD And TD.dFecha<=ldFechaH) And TD.nTipo In (14,15,16,17) Group By 1,2;
+      Set lnDescCli   = (Select IF(IsNull(Sum(nTotal))=1,0,Sum(nTotal)) From ttVentasDevResta);
+
+      /*Porcentaje de ventas asignado a otros comisionistas*/
+      Set lnDesc      = (lnVentaCli-lnDescCli);
+
+      /*Cargando las Ventas a Clientes pertenecientes a este comisionista pero que en la venta aparece cargada a otro comisionista*/
+      Delete From ttVentasDevResta;
+      Insert Into ttVentasDevResta (nId_Cliente,cId_Producto,nTotal) Select TD.nId_Cliente,TP.cId_Producto,If(TP.cFactor='*',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))*TP.nValor,If(TP.cFactor='+',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))+TP.nValor,If(TP.cFactor='-',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))-TP.nValor,If(TP.cFactor='/',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))/TP.nValor,0)))) As Total From tDocumentos TD Inner Join tDetalle_Documentos TDD On TD.nId_Numero = TDD.nId_Numero And TD.nTipo = TDD.nTipo And TD.cId_Sucursal = TDD.cId_Sucursal Inner Join tDetalle_Config_Comi TDC On TDC.nId_Cliente=TD.nId_Cliente Inner Join tDetalles_Grupos_Prod TDGP On TDGP.cId_Producto = TDD.cId_Producto Inner Join tProductos TP On TP.cId_Producto = TDD.cId_Producto Where TDC.nId_Comisionista = lnComi And TDGP.cId_Grupo = lcGrupo And TDC.nTipoPar = 1 And TDC.nRestaVen=1 And (TD.dFecha >=ldFechaD And TD.dFecha<=ldFechaH) And TD.nTipo In (10,11,12,13) Group By 1,2;
+      Set lnVentaCli1  = (Select IF(IsNull(Sum(nTotal))=1,0,Sum(nTotal)) From ttVentasDevResta);
+      /*Restando las devoluciones a clientes que pertenecen a otros comisionistas */
+      Delete From ttVentasDevResta;
+      Insert Into ttVentasDevResta (nId_Cliente,cId_Producto,nTotal) Select TD.nId_Cliente,TP.cId_Producto,If(TP.cFactor='*',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))*TP.nValor,If(TP.cFactor='+',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))+TP.nValor,If(TP.cFactor='-',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))-TP.nValor,If(TP.cFactor='/',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))/TP.nValor,0)))) As Total From tDocumentos TD Inner Join tDetalle_Documentos TDD On TD.nId_Numero = TDD.nId_Numero And TD.nTipo = TDD.nTipo And TD.cId_Sucursal = TDD.cId_Sucursal Inner Join tDetalle_Config_Comi TDC On TDC.nId_Cliente=TD.nId_Cliente Inner Join tDetalles_Grupos_Prod TDGP On TDGP.cId_Producto = TDD.cId_Producto Inner Join tProductos TP On TP.cId_Producto = TDD.cId_Producto Where TDC.nId_Comisionista = lnComi And TDGP.cId_Grupo = lcGrupo And TDC.nTipoPar = 1 And TDC.nRestaVen=1 And (TD.dFecha >=ldFechaD And TD.dFecha<=ldFechaH) And TD.nTipo In (14,15,16,17) Group By 1,2;
+      Set lnDescCli1   = (Select IF(IsNull(Sum(nTotal))=1,0,Sum(nTotal)) From ttVentasDevResta);
+      Set lnAsig       = (lnVentaCli1-lnDescCli1);
+
+      /*Cargando las Ventas a Clientes pertenecientes a este comisionista pero que en la venta aparece cargada a otro comisionista*/
+      Delete From ttVentasDevResta;
+      Insert Into ttVentasDevResta (nId_Cliente,cId_Producto,nTotal) Select TD.nId_Cliente,TP.cId_Producto,If(TP.cFactor='*',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))*TP.nValor,If(TP.cFactor='+',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))+TP.nValor,If(TP.cFactor='-',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))-TP.nValor,If(TP.cFactor='/',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))/TP.nValor,0)))) As Total From tDocumentos TD Inner Join tDetalle_Documentos TDD On TD.nId_Numero = TDD.nId_Numero And TD.nTipo = TDD.nTipo And TD.cId_Sucursal = TDD.cId_Sucursal Inner Join tDetalle_Config_Comi TDC On TDC.nId_Cliente=TD.nId_Cliente Inner Join tDetalles_Grupos_Prod TDGP On TDGP.cId_Producto = TDD.cId_Producto Inner Join tProductos TP On TP.cId_Producto = TDD.cId_Producto Where TDC.nId_Comisionista = lnComi And TDGP.cId_Grupo = lcGrupo And TDC.nTipoPar = 1 And TDC.nRestaVen=0 And (TD.dFecha >=ldFechaD And TD.dFecha<=ldFechaH) And TD.nTipo In (10,11,12,13) Group By 1,2;
+      Set lnVentaCli2  = (Select IF(IsNull(Sum(nTotal))=1,0,Sum(nTotal)) From ttVentasDevResta);
+      /*Restando las devoluciones a clientes que pertenecen a otros comisionistas */
+      Delete From ttVentasDevResta;
+      Insert Into ttVentasDevResta (nId_Cliente,cId_Producto,nTotal) Select TD.nId_Cliente,TP.cId_Producto,If(TP.cFactor='*',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))*TP.nValor,If(TP.cFactor='+',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))+TP.nValor,If(TP.cFactor='-',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))-TP.nValor,If(TP.cFactor='/',(if(IsNull(Sum(TDD.nCantidad))=1,0,Sum(TDD.nCantidad))*(TDC.nPorcVenta/100))/TP.nValor,0)))) As Total From tDocumentos TD Inner Join tDetalle_Documentos TDD On TD.nId_Numero = TDD.nId_Numero And TD.nTipo = TDD.nTipo And TD.cId_Sucursal = TDD.cId_Sucursal Inner Join tDetalle_Config_Comi TDC On TDC.nId_Cliente=TD.nId_Cliente Inner Join tDetalles_Grupos_Prod TDGP On TDGP.cId_Producto = TDD.cId_Producto Inner Join tProductos TP On TP.cId_Producto = TDD.cId_Producto Where TDC.nId_Comisionista = lnComi And TDGP.cId_Grupo = lcGrupo And TDC.nTipoPar = 1 And TDC.nRestaVen=0 And (TD.dFecha >=ldFechaD And TD.dFecha<=ldFechaH) And TD.nTipo In (14,15,16,17) Group By 1,2;
+      Set lnDescCli2   = (Select IF(IsNull(Sum(nTotal))=1,0,Sum(nTotal)) From ttVentasDevResta);
+      Set lnAsig1       = (lnVentaCli2-lnDescCli2);
+      Set lnAsig        = lnAsig + lnAsig1;
+
+
+
+
+      /*Calculando Ventas*/
+      Set lnVentaTotal = ((If(IsNull(lnVenta)=1,0,lnVenta)) + (If(IsNull(lnAsig)=1,0,lnAsig))) - ((If(IsNull(lnDev)=1,0,lnDev)) + (If(IsNull(lnDesc)=1,0,lnDesc)));
+      /*Calculando Cumplimiento*/
+      Set lnCumplimiento = If(IsNull((lnVentaTotal*100)/lnCuota)=1,0,(lnVentaTotal*100)/lnCuota);
+
+      If lnCumplimiento >= 100 And lnCumplimiento <= 130 Then
+        Set lnPor_BonoAsig = lnCumplimiento;
+      End If;
+
+      If lnCumplimiento > 130  Then
+        Set lnPor_BonoAsig = 130;
+      End If;
+
+      If lnCumplimiento < 100  Then
+        Set lnPor_BonoAsig = (Select nPorcPagar From tParametros_Com_Ventas Where nCumpDesde<=lnCumplimiento And nCumpHasta>=lnCumplimiento);
+        Set lnPor_BonoAsig = If(IsNull(lnPor_BonoAsig)=1,0,lnPor_BonoAsig);
+      End If;
+
+      If lnPagxCuota = 0 Then
+        Set lnPor_BonoAsig = 100;
+      End if;
+
+      Set lnPor_BonoAsig = Round(lnPor_BonoAsig);
+
+      If lnMontoBono = 0 Then
+        if Round(lnVentaTotal,2)>0.00 Then
+          Set lnBonoAsig = lnBono * (lnPor_Bono/100);
+          Set lnBonoAsig = lnBonoAsig * (lnPor_BonoAsig/100);
+          Set lnBonoAsig = Round(lnBonoAsig,2);
+        End If;
+      Else
+        if Round(lnVentaTotal,2) >0.00 Then
+          Set lnBonoAsig = Round(lnMontoBono * Round((lnPor_BonoAsig/100),2),2);
+        End If;
+      End if;
+      if Round(lnVentaTotal,2) =0.00 Then
+        Set lnBonoAsig = 0;
+      End If;
+      /*Guardando los datos de las comisiones*/
+      Insert Into tComisiones_Ventas(nId_ConfigCal,nId_Comisionista,cId_Grupo,nVenta,nDevoluciones,nOtrasAsignaciones,nOtrasDeducciones,nBono_Asig,nPorcBono)
+      Values (tnValor,lnComi,lcGrupo,lnVenta,lnDev,lnAsig,lnDesc,Round(lnBonoAsig,2),Round(lnPor_BonoAsig));
+
+      Delete From ttCuotasBonos Where nId = lnId;
+
+  End While;
+  /*Si Ocurre un error en la transaccion se deshacen los cambios, sino se guardan*/
+  Set nError =(Select @Error);
+  if(nError>0) then
+    ROLLBACK;
+  else
+    COMMIT;
+  end if;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `bdcomisiones`.`SP_CalcularComVentasComi`$$
+CREATE DEFINER=`root`@`%` PROCEDURE  `bdcomisiones`.`SP_CalcularComVentasComi`(tnValor Int)
+BEGIN
+  /*Declarando variables para el procedimiento*/
+  Declare ldFechaD ,ldFechaH Date;
+  Declare lnCuota,nError,lnId,lnPagxCuota Int(10);
+  Declare lnPorV,lnMontoBono,lnPor_Bono,lnPor_BonoAsig,lnVenta,lnOtrasAsig,lnOtrasDeduc,lnPorcDes,lnDev,lnDesc,lnAsig,lnBono,lnBonoAsig,lnVentaTotal,lnCumplimiento Double(15,3);
+  Declare lnComi Int(10);
+  Declare lcGrupo Varchar(4);
+  /*Inicializando las variables*/
+  Set lnCuota = 0;
+  Set lnMontoBono=0;
+  Set lnPor_Bono=0;
+  Set lnVenta=0;
+  Set lnPorV = 0;
+  Set lnBono=0;
+  Set lnBonoAsig =0.000;
+  Set lnComi=0;
+  Set lcGrupo='';
+  Set lnVentaTotal=0;
+  Set lnCumplimiento = 0;
+  Set lnPor_BonoAsig = 0;
+  Set lnAsig = 0;
+  Set lnOtrasAsig=0;
+  Set lnOtrasDeduc =0;
+  Set lnPagxCuota = 0;
+  /*Cargando el periodo de fecha de las comisiones*/
+  Set ldFechaD = (Select dFecha_Desde From tConfig_Calculos Where nId_ConfigCal=tnValor);
+  Set ldFechaH = (Select dFecha_Hasta From tConfig_Calculos Where nId_ConfigCal=tnValor);
+
+  Create Temporary Table ttCuotasBonos(nId Int(10) UNSIGNED NOT NULL Primary Key DEFAULT NULL AUTO_INCREMENT,nId_Comisionista Int(5),cId_Grupo Varchar(4),nCuota Int(10),nPor_Bono Double(15,2),nMonto_Bono Double(15,2),nPagxCuota Int(3));
+  Insert Into ttCuotasBonos (nId_Comisionista,cId_Grupo,nCuota,nPor_Bono,nMonto_Bono,nPagxCuota)Select nId_Comisionista,cId_Grupo,nCuota,nPor_Bono,nMontoBono,nPagxCuota From tDetalle_ConfigCalculos Where nId_ConfigCal = tnValor And nId_Comisionista In (Select Distinct nId_Comisionista From tDetalle_config_Comi Where nTipoPar=2) /*And (nPor_Bono <>0 Or nMontoBono <>0)*/ Order By 1,Cast(cId_Grupo As Decimal);
+  Create Temporary Table ttVentasDevResta (nId_Cliente Int(10),cId_Producto Varchar(22),nTotal Double(15,2));
+  Create Temporary Table ttVentasDevSuma (cId_Producto Varchar(22),nTotal Double(15,2));
+  Create Temporary Table ttComi (nId_ConfigCal Int(10));
+  Start Transaction;
+
+  While Exists(Select * From ttCuotasBonos) Do
+      /*Cargando el comisionista, el grupo y el numero de registro*/
+      Set lnId        = (Select nId From ttCuotasBonos Order By nId Limit 1);
+      Set lcGrupo     = (Select cId_Grupo From ttCuotasBonos Where nId = lnId);
+      Set lnComi      = (Select nId_Comisionista From ttCuotasBonos Where nId = lnId);
+      Set lnCuota     = (Select nCuota From ttCuotasBonos Where nId = lnId);
+      Set lnPagxCuota = (Select nPagxCuota From ttCuotasBonos Where nId = lnId);
+      Set lnMontoBono = (Select nMonto_Bono From ttCuotasBonos Where nId = lnId);
+      Set lnPor_Bono  = (Select nPor_Bono From ttCuotasBonos Where nId = lnId);
+      Set lnBono      = (Select TDCB.nMontoBono From tDetalle_Comi_Bono TDCB Inner Join tDetalles_Bonos_Grupos TDBG On TDCB.cId_Bono = TDBG.cId_Bono Inner Join tComisionistas TC ON TC.cId_TipoC = TDCB.cId_TipoC Where nId_Comisionista = lnComi And TDBG.cId_Grupo = lcGrupo);
+      /*Asignando las ventas de el comisionista */
+      Insert Into ttComi (nId_ConfigCal) Select Distinct TCC.nId_ConfigCal from tConfig_Calculos TCC Inner Join tDetalle_ConfigCalculos TDCC On TCC.nId_ConfigCal = TDCC.nId_ConfigCal Inner Join tComisiones_Ventas TCV On TDCC.nId_ConfigCal=TCV.nId_ConfigCal Where TCC.dFecha_Desde=ldFechaD And TCC.dFecha_Hasta=ldFechaH And TCV.nId_Comisionista In (Select nId_Comi From tDetalle_Config_Comi Where nId_Comisionista = lnComi);
+      Set lnVenta     = (Select IF(IsNull(Sum(nVenta))=1,0,Sum(nVenta)) * (TDCC.nPorcVenta/100) From tComisiones_Ventas TCV Inner Join tDetalle_Config_Comi TDCC On TCV.nId_Comisionista=TDCC.nId_Comi Where TDCC.nId_Comisionista = lnComi And cId_Grupo = lcGrupo And TCV.nId_ConfigCal In (Select nId_ConfigCal From ttComi));
+      /*Asignando las devoluciones de el comisionista */
+      Set lnDev       = (Select IF(IsNull(Sum(nDevoluciones))=1,0,Sum(nDevoluciones)) * (TDCC.nPorcVenta/100) From tComisiones_Ventas TCV Inner Join tDetalle_Config_Comi TDCC On TCV.nId_Comisionista=TDCC.nId_Comi Where TDCC.nId_Comisionista = lnComi And cId_Grupo = lcGrupo And TCV.nId_ConfigCal In (Select nId_ConfigCal From ttComi));
+      /*Asignando las Otras Asignaciones de el comisionista */
+      Set lnOtrasAsig =(Select IF(IsNull(Sum(nOtrasAsignaciones))=1,0,Sum(nOtrasAsignaciones)) * (TDCC.nPorcVenta/100) From tComisiones_Ventas TCV Inner Join tDetalle_Config_Comi TDCC On TCV.nId_Comisionista=TDCC.nId_Comi Where TDCC.nId_Comisionista = lnComi And cId_Grupo = lcGrupo And TCV.nId_ConfigCal In (Select nId_ConfigCal From ttComi));
+      /*Asignando las Otras deducciones de el comisionista */
+      Set lnOtrasDeduc =(Select IF(IsNull(Sum(nOtrasDeducciones))=1,0,Sum(nOtrasDeducciones)) * (TDCC.nPorcVenta/100) From tComisiones_Ventas TCV Inner Join tDetalle_Config_Comi TDCC On TCV.nId_Comisionista=TDCC.nId_Comi Where TDCC.nId_Comisionista = lnComi And cId_Grupo = lcGrupo And TCV.nId_ConfigCal In (Select nId_ConfigCal From ttComi));
+      Set lnOtrasDeduc = If(IsNull(lnOtrasDeduc)=1,0,lnOtrasDeduc);
+      /*Calculando Ventas*/
+      Set lnVentaTotal = ((If(IsNull(lnVenta)=1,0,lnVenta)) + (If(IsNull(lnOtrasAsig)=1,0,lnOtrasAsig))) - ((If(IsNull(lnDev)=1,0,lnDev)) + (If(IsNull(lnOtrasDeduc)=1,0,lnOtrasDeduc)));
+      /*Calculando Cumplimiento*/
+      Set lnCumplimiento = If(IsNull((lnVentaTotal*100)/lnCuota)=1,0,(lnVentaTotal*100)/lnCuota);
+
+      If lnCumplimiento >= 100 And lnCumplimiento <= 130 Then
+        Set lnPor_BonoAsig = lnCumplimiento;
+      End If;
+
+      If lnCumplimiento > 130  Then
+        Set lnPor_BonoAsig = 130;
+      End If;
+
+      If lnCumplimiento < 100  Then
+        Set lnPor_BonoAsig = (Select nPorcPagar From tParametros_Com_Ventas Where nCumpDesde<=lnCumplimiento And nCumpHasta>=lnCumplimiento);
+        Set lnPor_BonoAsig = If(IsNull(lnPor_BonoAsig)=1,0,lnPor_BonoAsig);
+      End If;
+
+      If lnPagxCuota = 0 Then
+        Set lnPor_BonoAsig = 100;
+      End if;
+
+      Set lnPor_BonoAsig = Round(lnPor_BonoAsig);
+
+      If lnMontoBono = 0 Then
+        if Round(lnVentaTotal,2)>0.00 Then
+          Set lnBonoAsig = lnBono * (lnPor_Bono/100);
+          Set lnBonoAsig = lnBonoAsig * (lnPor_BonoAsig/100);
+          Set lnBonoAsig = Round(lnBonoAsig,2);
+        End If;
+      Else
+        if Round(lnVentaTotal,2) >0.00 Then
+          Set lnBonoAsig = Round(lnMontoBono * Round((lnPor_BonoAsig/100),2),2);
+        End If;
+      End if;
+      if Round(lnVentaTotal,2) =0.00 Then
+        Set lnBonoAsig = 0;
+      End If;
+      /*Guardando los datos de las comisiones*/
+      Insert Into tComisiones_Ventas(nId_ConfigCal,nId_Comisionista,cId_Grupo,nVenta,nDevoluciones,nOtrasAsignaciones,nOtrasDeducciones,nBono_Asig,nPorcBono)
+      Values (tnValor,lnComi,lcGrupo,lnVenta,lnDev,lnOtrasAsig,lnOtrasDeduc,Round(lnBonoAsig,2),Round(lnPor_BonoAsig));
+
+      Delete From ttCuotasBonos Where nId = lnId;
+
+  End While;
+  /*Si Ocurre un error en la transaccion se deshacen los cambios, sino se guardan*/
+  Set nError =(Select @Error);
+  if(nError>0) then
+    ROLLBACK;
+  else
+    COMMIT;
+  end if;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `bdcomisiones`.`SP_DeshacerConfig`$$
+CREATE DEFINER=`root`@`%` PROCEDURE  `bdcomisiones`.`SP_DeshacerConfig`(tnValor int)
+BEGIN
+   Declare nNumero,nError int;
+   Set nNumero =tnValor;
+   Start Transaction;
+   Update tConfig Set nImportacion = if (nNumero + 1= nImportacion,nImportacion-1,nImportacion);
+   Delete From tconfig_importacion Where nId_Importacion=nNumero;
+   Set nError =(Select @Error);
+   if(nError>0) then
+        ROLLBACK;
+   else
+        COMMIT;
+   end if;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `bdcomisiones`.`SP_DeshacerConfigCalculo`$$
+CREATE DEFINER=`root`@`%` PROCEDURE  `bdcomisiones`.`SP_DeshacerConfigCalculo`(tnValor int)
+BEGIN
+   Declare nNumero,nError int;
+   Set nNumero =tnValor;
+   Start Transaction;
+   Update tConfig Set nConfig_Calculos = if (nNumero + 1= nConfig_Calculos,nConfig_Calculos-1,nConfig_Calculos);
+   Delete From tconfig_Calculos Where nId_ConfigCal=nNumero;
+   Delete From tdetalle_configcalculos Where nId_ConfigCal=nNumero;
+
+   Set nError =(Select @Error);
+   if(nError>0) then
+        ROLLBACK;
+   else
+        COMMIT;
+   end if;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `bdcomisiones`.`SP_RestaurarConfCalculo`$$
+CREATE DEFINER=`root`@`%` PROCEDURE  `bdcomisiones`.`SP_RestaurarConfCalculo`(tnValor Int,tcValor Varchar(2))
+BEGIN
+   Declare nError Int;
+   Start Transaction;
+   /*Insertando El detalle*/
+   Delete From tDetalle_ConfigCalculos Where nId_ConfigCal= tnValor;
+   Insert into tDetalle_ConfigCalculos SELECT tnValor,TC.nId_Comisionista,TGP.cId_Grupo,0,0,0,0 FROM tComisionistas TC Inner Join tTipo_Comisionistas TT On TC.cId_TipoC=TT.cId_TipoC Inner Join tDetalle_Comi_Bono TDCB On TT.cId_TipoC=TDCB.cId_TipoC Inner Join tdetalles_bonos_grupos TDBG ON TDBG.cId_Bono=TDCB.cId_Bono Inner Join tGrupos_Productos TGP On TDBG.cId_Grupo=TGP.cId_Grupo Where TC.nActivo = 1 And TC.cId_Sucursal = tcValor ;
+/*
+   Insert into tDetalle_ConfigCalculos SELECT tnValor,TC.nId_Comisionista,TDGP.cId_Producto,0,0,0 FROM tComisionistas TC Inner Join tTipo_Comisionistas TT On TC.cId_TipoC=TT.cId_TipoC Inner Join tDetalle_Comi_Bono TDCB On TT.cId_TipoC=TDCB.cId_TipoC Inner Join tdetalles_bonos_grupos TDBG ON TDBG.cId_Bono=TDCB.cId_Bono Inner Join tGrupos_Productos TGP On TDBG.cId_Grupo=TGP.cId_Grupo Inner Join tDetalles_Grupos_Prod TDGP On TDGP.cId_Grupo=TGP.cId_Grupo Inner Join tProductos TP On TDGP.cId_Producto=TP.cId_Producto Where TC.nActivo = 1 And TC.cId_Sucursal = tcValor And TDGP.cId_Producto Not In (Select cId_Producto From ttProd) And TC.nId_Comisionista Not In (Select nId_Comisionista From tDetalle_Config_Comi Where nTipoPar=1);
+   Insert into tDetalle_ConfigCalculos Select tnValor,TDCC.nId_Comisionista,TDCC.cId_Producto,0,0,0 From tDetalle_Config_Comi TDCC Inner Join tComisionistas TC On TDCC.nId_Comisionista=TC.nId_Comisionista Where TC.nActivo = 1 And TC.cId_Sucursal = tcValor And TDCC.cId_Producto In (Select cId_Producto From ttProd);
+*/
+   Set nError =(Select @Error);
+   if(nError>0) then
+        ROLLBACK;
+   else
+        COMMIT;
+   end if;
+END $$
+
+DELIMITER ;
+

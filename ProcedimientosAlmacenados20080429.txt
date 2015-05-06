@@ -1,0 +1,89 @@
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS "bdcomisiones"."SP_AgregarConfCalculo"$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE  `bdcomisiones`.`SP_AgregarConfCalculo`(tcValor Varchar(2))
+BEGIN
+   Declare nNumero,nError int;
+   Set nNumero =(Select nConfig_Calculos From tConfig);
+   Start Transaction;
+   Update tConfig Set nConfig_Calculos = nNumero + 1;
+   Insert Into tconfig_Calculos(nId_ConfigCal,cId_Sucursal) Values(nNumero,tcValor);
+   /*Creando Tabla Temporal*/
+   Create Temporary Table ttProd (cId_Producto Varchar(22),nPorc Decimal(10,2));
+   Insert Into ttProd Select tDetalle_Config_Comi.cId_Producto,Sum(tDetalle_Config_Comi.nPorcVenta) From tDetalle_Config_Comi Where tDetalle_Config_Comi.nRestaVen = 1 Group By 1 Having Sum(tDetalle_Config_Comi.nPorcVenta)=100;
+   /*Insertando El detalle*/
+   Insert into tDetalle_ConfigCalculos SELECT nNumero,TC.nId_Comisionista,TDGP.cId_Producto,0,0,0 FROM tComisionistas TC Inner Join tTipo_Comisionistas TT On TC.cId_TipoC=TT.cId_TipoC Inner Join tDetalle_Comi_Bono TDCB On TT.cId_TipoC=TDCB.cId_TipoC Inner Join tdetalles_bonos_grupos TDBG ON TDBG.cId_Bono=TDCB.cId_Bono Inner Join tGrupos_Productos TGP On TDBG.cId_Grupo=TGP.cId_Grupo Inner Join tDetalles_Grupos_Prod TDGP On TDGP.cId_Grupo=TGP.cId_Grupo Inner Join tProductos TP On TDGP.cId_Producto=TP.cId_Producto Where TC.nActivo = 1 And TC.cId_Sucursal = tcValor And TDGP.cId_Producto Not In (Select cId_Producto From ttProd) And TC.nId_Comisionista Not In (Select nId_Comisionista From tDetalle_Config_Comi Where nTipoPar=1);
+   Insert into tDetalle_ConfigCalculos Select nNumero,tDetalle_Config_Comi.nId_Comisionista,tDetalle_Config_Comi.cId_Producto,0,0,0 From tDetalle_Config_Comi Where tDetalle_Config_Comi.cId_Producto In (Select cId_Producto From ttProd);
+   Set nError =(Select @Error);
+   if(nError>0) then
+        ROLLBACK;
+   else
+        COMMIT;
+   end if;
+   Select nNumero;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS "bdcomisiones"."SP_AgregarConfiguracion"$$
+CREATE DEFINER="root"@"localhost" PROCEDURE  "bdcomisiones"."SP_AgregarConfiguracion"()
+BEGIN
+   Declare nNumero,nError int;
+   Set nNumero =(Select nImportacion From tConfig);
+   Start Transaction;
+   Update tConfig Set nImportacion = nNumero + 1;
+   Insert Into tconfig_importacion(nId_Importacion) Values(nNumero);
+   Set nError =(Select @Error);
+   if(nError>0) then
+        ROLLBACK;
+   else
+        COMMIT;
+   end if;
+   Select nNumero;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS "bdcomisiones"."SP_DeshacerConfig"$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE  `bdcomisiones`.`SP_DeshacerConfig`(tnValor int)
+BEGIN
+   Declare nNumero,nError int;
+   Set nNumero =tnValor;
+   Start Transaction;
+   Update tConfig Set nImportacion = if (nNumero + 1= nImportacion,nImportacion-1,nImportacion);
+   Delete From tconfig_importacion Where nId_Importacion=nNumero;
+   Set nError =(Select @Error);
+   if(nError>0) then
+        ROLLBACK;
+   else
+        COMMIT;
+   end if;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS "bdcomisiones"."SP_DeshacerConfigCalculo"$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE  `bdcomisiones`.`SP_DeshacerConfigCalculo`(tnValor int)
+BEGIN
+   Declare nNumero,nError int;
+   Set nNumero =tnValor;
+   Start Transaction;
+   Update tConfig Set nConfig_Calculos = if (nNumero + 1= nConfig_Calculos,nConfig_Calculos-1,nConfig_Calculos);
+   Delete From tconfig_Calculos Where nId_ConfigCal=nNumero;
+   Delete From tdetalle_configcalculos Where nId_ConfigCal=nNumero;
+
+   Set nError =(Select @Error);
+   if(nError>0) then
+        ROLLBACK;
+   else
+        COMMIT;
+   end if;
+END $$
+
+DELIMITER ;
