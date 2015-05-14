@@ -1,12 +1,12 @@
 *       *********************************************************
 *       *                                                         
-*       * 02/05/14          MENUPRINCIPAL.MPR           08:05:31  
+*       * 05/14/15          MENUPRINCIPAL.MPR           17:51:48  
 *       *                                                         
 *       *********************************************************
 *       *                                                         
 *       * Carlos Parada                                           
 *       *                                                         
-*       * Copyright (C) 2014 Iancarina                            
+*       * Copyright (C) 2015 Iancarina                            
 *       * Parque Industrial los Llanos KM185 Via Guanar           
 *       * Araure, Portu  3303                                        
 *       * Venezuela                                         
@@ -27,19 +27,19 @@
 SET SYSMENU TO
 SET SYSMENU AUTOMATIC
 
-DEFINE PAD _3zq0hce8s OF _MSYSMENU PROMPT "\<Archivo" COLOR SCHEME 3 ;
+DEFINE PAD _4cn12ad0k OF _MSYSMENU PROMPT "\<Archivo" COLOR SCHEME 3 ;
 	KEY ALT+A, ""
-DEFINE PAD _3zq0hce8t OF _MSYSMENU PROMPT "\<Movimientos" COLOR SCHEME 3 ;
+DEFINE PAD _4cn12ad0l OF _MSYSMENU PROMPT "\<Movimientos" COLOR SCHEME 3 ;
 	KEY ALT+M, ""
-DEFINE PAD _3zq0hce8u OF _MSYSMENU PROMPT "\<Reportes" COLOR SCHEME 3 ;
+DEFINE PAD _4cn12ad0m OF _MSYSMENU PROMPT "\<Reportes" COLOR SCHEME 3 ;
 	KEY F8, "F8" ;
 	SKIP FOR wExist("frmReportes") or !(plReportes )
-DEFINE PAD _3zq0hce8v OF _MSYSMENU PROMPT "Ma\<ntenimiento" COLOR SCHEME 3 ;
+DEFINE PAD _4cn12ad0n OF _MSYSMENU PROMPT "Ma\<ntenimiento" COLOR SCHEME 3 ;
 	KEY ALT+N, ""
-ON PAD _3zq0hce8s OF _MSYSMENU ACTIVATE POPUP archivo
-ON PAD _3zq0hce8t OF _MSYSMENU ACTIVATE POPUP movimiento
-ON SELECTION PAD _3zq0hce8u OF _MSYSMENU do form frmReportes.scx
-ON PAD _3zq0hce8v OF _MSYSMENU ACTIVATE POPUP mantenimie
+ON PAD _4cn12ad0k OF _MSYSMENU ACTIVATE POPUP archivo
+ON PAD _4cn12ad0l OF _MSYSMENU ACTIVATE POPUP movimiento
+ON SELECTION PAD _4cn12ad0m OF _MSYSMENU do form frmReportes.scx
+ON PAD _4cn12ad0n OF _MSYSMENU ACTIVATE POPUP mantenimie
 
 DEFINE POPUP archivo MARGIN RELATIVE SHADOW COLOR SCHEME 4
 DEFINE BAR 1 OF archivo PROMPT "S\<ucursales" ;
@@ -85,8 +85,8 @@ ON SELECTION BAR 9 OF archivo do form frmtipo_movimientos.scx
 ON SELECTION BAR 10 OF archivo do form frmtiposdoc.scx
 ON SELECTION BAR 11 OF archivo do form frmdatosempleados.scx
 ON SELECTION BAR 13 OF archivo ;
-	DO _3zq0hce8w ;
-	IN LOCFILE("\COMISIONESVEND\MENUS\MENUPRINCIPAL" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUPRINCIPAL?")
+	DO _4cn12ad0o ;
+	IN LOCFILE("SALES-COMMISIONS\MENUS\MENUPRINCIPAL" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUPRINCIPAL?")
 ON SELECTION BAR 14 OF archivo quit
 
 DEFINE POPUP movimiento MARGIN RELATIVE SHADOW COLOR SCHEME 4
@@ -119,7 +119,7 @@ ON SELECTION BAR 3 OF mantenimie do form frmconfig_importacion.scx
 
 *       *********************************************************
 *       *                                                         
-*       * _3ZQ0HCE8W  ON SELECTION BAR 13 OF POPUP archivo        
+*       * _4CN12AD0O  ON SELECTION BAR 13 OF POPUP archivo        
 *       *                                                         
 *       * Procedure Origin:                                       
 *       *                                                         
@@ -130,7 +130,7 @@ ON SELECTION BAR 3 OF mantenimie do form frmconfig_importacion.scx
 *       *                                                         
 *       *********************************************************
 *
-PROCEDURE _3zq0hce8w
+PROCEDURE _4cn12ad0o
 ON SHUTDOWN Salirsp()
 SET SYSMENU OFF
 pcBarra.Hide()
