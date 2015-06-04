@@ -77,7 +77,7 @@ ELSE
 	USE 
 ENDIF 
 oapp = CREATEOBJECT("Principal")
-_Screen.Caption ="Sistema de Comisiones"
+_Screen.Caption ="Sistema de Comisiones" + "-" + pcServidor + "-" + pcData
 lnConexion=CrearConexion()
 IF lnConexion> 0 THEN 
 *	lccmd ="insert into tusuarios(cid_login,cpassword,cDescripcion,nusuarios)values('admin','"+encriptar("admin")+"','Administrador',1)"

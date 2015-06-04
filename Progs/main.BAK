@@ -2,7 +2,7 @@
 PUBLIC Fun,pcSucursal,pcServidor,pcData,pcUsuario,pcContrasena,pcRuta,pnProgram,pcBarra,oApp,pcAccesSuc,pcUsuarioSystem,pcBarraEstado,pcSucursalDes
 pcSucursalDes=""
 &&Variables de acceso
-PUBLIC plSucursales,plComisionistas,plParaComi,plProductos,plGrupos_prod,plClientes,plConfig_Calc,plCalculos,plReportes,plRespaldar,plRestaurar,plUsuarios,plTipoComisionistas,plBonos,plConfigSistema,plConfig_Import,plTiposCliente,plImportacion,plTipoMov,plDatosEmp,plSuplencias
+PUBLIC plSucursales,plComisionistas,plParaComi,plProductos,plGrupos_prod,plClientes,plConfig_Calc,plCalculos,plReportes,plRespaldar,plRestaurar,plUsuarios,plTipoComisionistas,plBonos,plConfigSistema,plConfig_Import,plTiposCliente,plImportacion,plTipoMov,plDatosEmp,plSuplencias,plTiposDoc
 plTipoMov=.f.
 plSucursales=.f.
 plComisionistas=.f.
@@ -23,6 +23,7 @@ plTiposCliente=.f.
 plImportacion=.f.
 plDatosEmp=.f.
 plSuplencias=.f.
+plTiposDoc= .f.
 LOCAL lcArchivo,lnCon,lnSize,lcTexto,lcEject
 SET DATE BRITISH 
 SET TALK OFF 
@@ -76,7 +77,7 @@ ELSE
 	USE 
 ENDIF 
 oapp = CREATEOBJECT("Principal")
-_Screen.Caption ="Sistema de Comisiones"
+_Screen.Caption ="Sistema de Comisiones" + - + pcServidor + - + pcData
 lnConexion=CrearConexion()
 IF lnConexion> 0 THEN 
 *	lccmd ="insert into tusuarios(cid_login,cpassword,cDescripcion,nusuarios)values('admin','"+encriptar("admin")+"','Administrador',1)"
