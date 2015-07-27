@@ -1,6 +1,6 @@
 *       *********************************************************
 *       *                                                         
-*       * 06/04/15            MENU_CONF.MPR             12:25:18  
+*       * 07/27/15            MENU_CONF.MPR             16:23:58  
 *       *                                                         
 *       *********************************************************
 *       *                                                         
@@ -27,9 +27,9 @@
 SET SYSMENU TO
 SET SYSMENU AUTOMATIC
 
-DEFINE PAD _4d80qmh88 OF _MSYSMENU PROMPT "\<Archivo" COLOR SCHEME 3 ;
+DEFINE PAD _4ep0z5emf OF _MSYSMENU PROMPT "\<Archivo" COLOR SCHEME 3 ;
 	KEY ALT+A, ""
-ON PAD _4d80qmh88 OF _MSYSMENU ACTIVATE POPUP archivo
+ON PAD _4ep0z5emf OF _MSYSMENU ACTIVATE POPUP archivo
 
 DEFINE POPUP archivo MARGIN RELATIVE SHADOW COLOR SCHEME 4
 DEFINE BAR 1 OF archivo PROMPT "\<Configurar"

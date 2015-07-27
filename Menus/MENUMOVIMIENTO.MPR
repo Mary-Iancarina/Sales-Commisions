@@ -1,6 +1,6 @@
 *       *********************************************************
 *       *                                                         
-*       * 06/04/15         MENUMOVIMIENTO.MPR           12:25:18  
+*       * 07/27/15         MENUMOVIMIENTO.MPR           16:23:58  
 *       *                                                         
 *       *********************************************************
 *       *                                                         
@@ -27,22 +27,22 @@
 SET SYSMENU TO
 SET SYSMENU AUTOMATIC
 
-DEFINE PAD _4d80qmhcq OF _MSYSMENU PROMPT "\<Archivo" COLOR SCHEME 3 ;
+DEFINE PAD _4ep0z5eof OF _MSYSMENU PROMPT "\<Archivo" COLOR SCHEME 3 ;
 	KEY ALT+A, ""
-DEFINE PAD _4d80qmhcr OF _MSYSMENU PROMPT "\<Movimientos" COLOR SCHEME 3 ;
+DEFINE PAD _4ep0z5eog OF _MSYSMENU PROMPT "\<Movimientos" COLOR SCHEME 3 ;
 	KEY ALT+M, ""
-DEFINE PAD _4d80qmhcs OF _MSYSMENU PROMPT "\<Reportes" COLOR SCHEME 3 ;
+DEFINE PAD _4ep0z5eoh OF _MSYSMENU PROMPT "\<Reportes" COLOR SCHEME 3 ;
 	KEY F8, "F8" ;
 	SKIP FOR 1=1
-DEFINE PAD _4d80qmhct OF _MSYSMENU PROMPT "Ma\<ntenimiento" COLOR SCHEME 3 ;
+DEFINE PAD _4ep0z5eoi OF _MSYSMENU PROMPT "Ma\<ntenimiento" COLOR SCHEME 3 ;
 	KEY ALT+N, ""
-DEFINE PAD _4d80qmhcu OF _MSYSMENU PROMPT "\<Exploración" COLOR SCHEME 3 ;
+DEFINE PAD _4ep0z5eoj OF _MSYSMENU PROMPT "\<Exploración" COLOR SCHEME 3 ;
 	KEY ALT+E, "" ;
 	SKIP FOR _screen.formCount <1
-ON PAD _4d80qmhcq OF _MSYSMENU ACTIVATE POPUP archivo
-ON PAD _4d80qmhcr OF _MSYSMENU ACTIVATE POPUP movimiento
-ON PAD _4d80qmhct OF _MSYSMENU ACTIVATE POPUP mantenimie
-ON PAD _4d80qmhcu OF _MSYSMENU ACTIVATE POPUP exploració
+ON PAD _4ep0z5eof OF _MSYSMENU ACTIVATE POPUP archivo
+ON PAD _4ep0z5eog OF _MSYSMENU ACTIVATE POPUP movimiento
+ON PAD _4ep0z5eoi OF _MSYSMENU ACTIVATE POPUP mantenimie
+ON PAD _4ep0z5eoj OF _MSYSMENU ACTIVATE POPUP exploració
 
 DEFINE POPUP archivo MARGIN RELATIVE SHADOW COLOR SCHEME 4
 DEFINE BAR 1 OF archivo PROMPT "S\<ucursales" ;
@@ -89,7 +89,7 @@ ON SELECTION BAR 9 OF archivo do form frmtipo_movimientos.scx
 ON SELECTION BAR 10 OF archivo do form frmtiposdoc.scx
 ON SELECTION BAR 11 OF archivo do form frmdatosempleados.scx
 ON SELECTION BAR 13 OF archivo ;
-	DO _4d80qmhcv ;
+	DO _4ep0z5eok ;
 	IN LOCFILE("SALES-COMMISIONS\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
 ON SELECTION BAR 14 OF archivo quit
 
@@ -156,46 +156,46 @@ DEFINE BAR 12 OF exploració PROMPT "Ce\<rrar" ;
 	KEY CTRL+F4, "CTRL+F4" ;
 	SKIP FOR _Screen.ActiveForm.Operacion<>0
 ON SELECTION BAR 1 OF exploració ;
-	DO _4d80qmhcw ;
+	DO _4ep0z5eol ;
 	IN LOCFILE("SALES-COMMISIONS\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
 ON SELECTION BAR 2 OF exploració ;
-	DO _4d80qmhcx ;
+	DO _4ep0z5eom ;
 	IN LOCFILE("SALES-COMMISIONS\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
 ON SELECTION BAR 3 OF exploració ;
-	DO _4d80qmhcy ;
+	DO _4ep0z5eon ;
 	IN LOCFILE("SALES-COMMISIONS\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
 ON SELECTION BAR 4 OF exploració ;
-	DO _4d80qmhcz ;
+	DO _4ep0z5eoo ;
 	IN LOCFILE("SALES-COMMISIONS\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
 ON SELECTION BAR 5 OF exploració ;
-	DO _4d80qmhd0 ;
+	DO _4ep0z5eop ;
 	IN LOCFILE("SALES-COMMISIONS\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
 ON SELECTION BAR 6 OF exploració ;
-	DO _4d80qmhd1 ;
+	DO _4ep0z5eoq ;
 	IN LOCFILE("SALES-COMMISIONS\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
 ON SELECTION BAR 7 OF exploració ;
-	DO _4d80qmhd2 ;
+	DO _4ep0z5eor ;
 	IN LOCFILE("SALES-COMMISIONS\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
 ON SELECTION BAR 8 OF exploració ;
-	DO _4d80qmhd3 ;
+	DO _4ep0z5eos ;
 	IN LOCFILE("SALES-COMMISIONS\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
 ON SELECTION BAR 9 OF exploració ;
-	DO _4d80qmhd4 ;
+	DO _4ep0z5eot ;
 	IN LOCFILE("SALES-COMMISIONS\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
 ON SELECTION BAR 10 OF exploració ;
-	DO _4d80qmhd5 ;
+	DO _4ep0z5eou ;
 	IN LOCFILE("SALES-COMMISIONS\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
 ON SELECTION BAR 11 OF exploració ;
-	DO _4d80qmhd6 ;
+	DO _4ep0z5eov ;
 	IN LOCFILE("SALES-COMMISIONS\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
 ON SELECTION BAR 12 OF exploració ;
-	DO _4d80qmhd7 ;
+	DO _4ep0z5eow ;
 	IN LOCFILE("SALES-COMMISIONS\MENUS\MENUMOVIMIENTO" ,"MPX;MPR|FXP;PRG" ,"DÓNDE está MENUMOVIMIENTO?")
 
 
 *       *********************************************************
 *       *                                                         
-*       * _4D80QMHCV  ON SELECTION BAR 13 OF POPUP archivo        
+*       * _4EP0Z5EOK  ON SELECTION BAR 13 OF POPUP archivo        
 *       *                                                         
 *       * Procedure Origin:                                       
 *       *                                                         
@@ -206,7 +206,7 @@ ON SELECTION BAR 12 OF exploració ;
 *       *                                                         
 *       *********************************************************
 *
-PROCEDURE _4d80qmhcv
+PROCEDURE _4ep0z5eok
 SET SYSMENU OFF
 pcBarra.Hide()
 DO FORM frmacceso.scx
@@ -215,7 +215,7 @@ DO FORM frmacceso.scx
 
 *       *********************************************************
 *       *                                                         
-*       * _4D80QMHCW  ON SELECTION BAR 1 OF POPUP exploració      
+*       * _4EP0Z5EOL  ON SELECTION BAR 1 OF POPUP exploració      
 *       *                                                         
 *       * Procedure Origin:                                       
 *       *                                                         
@@ -226,7 +226,7 @@ DO FORM frmacceso.scx
 *       *                                                         
 *       *********************************************************
 *
-PROCEDURE _4d80qmhcw
+PROCEDURE _4ep0z5eol
 IF _screen.formCount > 0 THEN
 	_Screen.ActiveForm.Primero()
 ENDIF
@@ -234,7 +234,7 @@ ENDIF
 
 *       *********************************************************
 *       *                                                         
-*       * _4D80QMHCX  ON SELECTION BAR 2 OF POPUP exploració      
+*       * _4EP0Z5EOM  ON SELECTION BAR 2 OF POPUP exploració      
 *       *                                                         
 *       * Procedure Origin:                                       
 *       *                                                         
@@ -245,7 +245,7 @@ ENDIF
 *       *                                                         
 *       *********************************************************
 *
-PROCEDURE _4d80qmhcx
+PROCEDURE _4ep0z5eom
 IF _screen.formCount > 0 THEN
 	_Screen.ActiveForm.Anterior()
 ENDIF
@@ -253,7 +253,7 @@ ENDIF
 
 *       *********************************************************
 *       *                                                         
-*       * _4D80QMHCY  ON SELECTION BAR 3 OF POPUP exploració      
+*       * _4EP0Z5EON  ON SELECTION BAR 3 OF POPUP exploració      
 *       *                                                         
 *       * Procedure Origin:                                       
 *       *                                                         
@@ -264,7 +264,7 @@ ENDIF
 *       *                                                         
 *       *********************************************************
 *
-PROCEDURE _4d80qmhcy
+PROCEDURE _4ep0z5eon
 IF _screen.formCount > 0 THEN
 	_Screen.ActiveForm.Siguiente()
 ENDIF
@@ -272,7 +272,7 @@ ENDIF
 
 *       *********************************************************
 *       *                                                         
-*       * _4D80QMHCZ  ON SELECTION BAR 4 OF POPUP exploració      
+*       * _4EP0Z5EOO  ON SELECTION BAR 4 OF POPUP exploració      
 *       *                                                         
 *       * Procedure Origin:                                       
 *       *                                                         
@@ -283,7 +283,7 @@ ENDIF
 *       *                                                         
 *       *********************************************************
 *
-PROCEDURE _4d80qmhcz
+PROCEDURE _4ep0z5eoo
 IF _screen.formCount > 0 THEN
 	_Screen.ActiveForm.Ultimo()
 ENDIF
@@ -291,7 +291,7 @@ ENDIF
 
 *       *********************************************************
 *       *                                                         
-*       * _4D80QMHD0  ON SELECTION BAR 5 OF POPUP exploració      
+*       * _4EP0Z5EOP  ON SELECTION BAR 5 OF POPUP exploració      
 *       *                                                         
 *       * Procedure Origin:                                       
 *       *                                                         
@@ -302,7 +302,7 @@ ENDIF
 *       *                                                         
 *       *********************************************************
 *
-PROCEDURE _4d80qmhd0
+PROCEDURE _4ep0z5eop
 IF _screen.formCount > 0 THEN
 	_Screen.ActiveForm.Nuevo()
 ENDIF
@@ -310,7 +310,7 @@ ENDIF
 
 *       *********************************************************
 *       *                                                         
-*       * _4D80QMHD1  ON SELECTION BAR 6 OF POPUP exploració      
+*       * _4EP0Z5EOQ  ON SELECTION BAR 6 OF POPUP exploració      
 *       *                                                         
 *       * Procedure Origin:                                       
 *       *                                                         
@@ -321,7 +321,7 @@ ENDIF
 *       *                                                         
 *       *********************************************************
 *
-PROCEDURE _4d80qmhd1
+PROCEDURE _4ep0z5eoq
 IF _screen.formCount > 0 THEN
 	_Screen.ActiveForm.Modificar()
 ENDIF
@@ -329,7 +329,7 @@ ENDIF
 
 *       *********************************************************
 *       *                                                         
-*       * _4D80QMHD2  ON SELECTION BAR 7 OF POPUP exploració      
+*       * _4EP0Z5EOR  ON SELECTION BAR 7 OF POPUP exploració      
 *       *                                                         
 *       * Procedure Origin:                                       
 *       *                                                         
@@ -340,7 +340,7 @@ ENDIF
 *       *                                                         
 *       *********************************************************
 *
-PROCEDURE _4d80qmhd2
+PROCEDURE _4ep0z5eor
 IF _screen.formCount > 0 THEN
 	_Screen.ActiveForm.Eliminar()
 ENDIF
@@ -348,7 +348,7 @@ ENDIF
 
 *       *********************************************************
 *       *                                                         
-*       * _4D80QMHD3  ON SELECTION BAR 8 OF POPUP exploració      
+*       * _4EP0Z5EOS  ON SELECTION BAR 8 OF POPUP exploració      
 *       *                                                         
 *       * Procedure Origin:                                       
 *       *                                                         
@@ -359,7 +359,7 @@ ENDIF
 *       *                                                         
 *       *********************************************************
 *
-PROCEDURE _4d80qmhd3
+PROCEDURE _4ep0z5eos
 IF _screen.formCount > 0 THEN
 	_Screen.ActiveForm.Guardar()
 ENDIF
@@ -367,7 +367,7 @@ ENDIF
 
 *       *********************************************************
 *       *                                                         
-*       * _4D80QMHD4  ON SELECTION BAR 9 OF POPUP exploració      
+*       * _4EP0Z5EOT  ON SELECTION BAR 9 OF POPUP exploració      
 *       *                                                         
 *       * Procedure Origin:                                       
 *       *                                                         
@@ -378,7 +378,7 @@ ENDIF
 *       *                                                         
 *       *********************************************************
 *
-PROCEDURE _4d80qmhd4
+PROCEDURE _4ep0z5eot
 IF _screen.formCount > 0 THEN
 	_Screen.ActiveForm.Cancelar()
 ENDIF
@@ -386,7 +386,7 @@ ENDIF
 
 *       *********************************************************
 *       *                                                         
-*       * _4D80QMHD5  ON SELECTION BAR 10 OF POPUP exploració     
+*       * _4EP0Z5EOU  ON SELECTION BAR 10 OF POPUP exploració     
 *       *                                                         
 *       * Procedure Origin:                                       
 *       *                                                         
@@ -397,7 +397,7 @@ ENDIF
 *       *                                                         
 *       *********************************************************
 *
-PROCEDURE _4d80qmhd5
+PROCEDURE _4ep0z5eou
 IF _screen.formCount > 0 THEN
 	_Screen.ActiveForm.Buscar()
 ENDIF
@@ -405,7 +405,7 @@ ENDIF
 
 *       *********************************************************
 *       *                                                         
-*       * _4D80QMHD6  ON SELECTION BAR 11 OF POPUP exploració     
+*       * _4EP0Z5EOV  ON SELECTION BAR 11 OF POPUP exploració     
 *       *                                                         
 *       * Procedure Origin:                                       
 *       *                                                         
@@ -416,7 +416,7 @@ ENDIF
 *       *                                                         
 *       *********************************************************
 *
-PROCEDURE _4d80qmhd6
+PROCEDURE _4ep0z5eov
 IF _screen.formCount <> 0 THEN
 	_Screen.ActiveForm.Imprimir()
 ENDIF
@@ -424,7 +424,7 @@ ENDIF
 
 *       *********************************************************
 *       *                                                         
-*       * _4D80QMHD7  ON SELECTION BAR 12 OF POPUP exploració     
+*       * _4EP0Z5EOW  ON SELECTION BAR 12 OF POPUP exploració     
 *       *                                                         
 *       * Procedure Origin:                                       
 *       *                                                         
@@ -435,7 +435,7 @@ ENDIF
 *       *                                                         
 *       *********************************************************
 *
-PROCEDURE _4d80qmhd7
+PROCEDURE _4ep0z5eow
 IF _screen.formCount > 0 THEN
 	_Screen.ActiveForm.Cerrar()
 ENDIF
